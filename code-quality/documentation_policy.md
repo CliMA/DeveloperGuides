@@ -20,6 +20,16 @@ All repositories must include the following high-priority documentation sections
 
 Low-priority sections to add over time include Theory/Technical Docs, How-to-Guides, Tutorials, References, and Acknowledgements.
 
+### Tools
+
+- Use [Documenter.jl](https://juliadocs.github.io/Documenter.jl/stable/) for rendering docstrings on documentation pages.
+- Use [Literate.jl](https://fredrikekre.github.io/Literate.jl/stable/) to generate markdown and Jupyter-notebook-style examples.
+- Documentation sources live in `docs/src/`; tutorials in `tutorials/` (if present).
+
+### Licensing
+
+All repositories must include a `NOTICE` file and a `LICENSE` file (Apache License 2.0) in the repository root.
+
 ## 3. Docstring Standard
 
 ### Structure

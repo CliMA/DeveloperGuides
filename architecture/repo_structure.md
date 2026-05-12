@@ -39,7 +39,7 @@ Most CliMA Julia packages share these directories:
 
 ## When a repo deviates from these conventions
 
-Repos like ClimaCore, Thermodynamics, and CloudMicrophysics have different source layouts than model repos. Read `src/<PackageName>.jl` and `docs/src/` first; do not assume an Atmos-style layout.
+Repos like ClimaCore, Thermodynamics, and CloudMicrophysics have different source layouts than model repos. Read `src/<PackageName>.jl` and `docs/src/` first.
 
 ## Self-correction
 

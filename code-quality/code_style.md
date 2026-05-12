@@ -12,13 +12,15 @@ julia -e 'using JuliaFormatter; format(".")'
 
 ### Version consistency
 
-Match the major version of `JuliaFormatter` used in CI to prevent unnecessary diff churn. The CI workflow typically pins the major version:
+Match the major version of `JuliaFormatter` used in CI to prevent unnecessary diff churn. Most CliMA repos use the `julia-actions/julia-format` GitHub Action:
 
 ```yaml
-- uses: julia-actions/julia-format@v3
+- uses: julia-actions/julia-format@v4
   with:
     version: '1'
 ```
+
+Note: the legacy `.dev/climaformat.jl` script has been deprecated. Use `julia -e 'using JuliaFormatter; format(".")'` directly.
 
 ### Avoiding formatting noise
 
@@ -98,7 +100,7 @@ When a feature is deprecated or removed, follow the full cleanup protocol:
 - **Capitalization**: Modules and structs should use `TitleCase`.
 - **Functions**: Function names should be lowercase with words separated by underscores.
 - **Variables**: Follow the conventions in the [Variable List](variable_list.md). Avoid 1-character names like `l` (lowercase el), `O` (uppercase oh), or `I` (uppercase eye).
-- **Line length**: Try to limit lines to 78 characters.
+- **Line length**: The JuliaFormatter margin is the authoritative line-length limit. Most repos use `margin = 92`; check the repo's `.JuliaFormatter.toml`.
 - **Imports**: Group `using`/`import` statements in the following order, separated by blank lines:
   1. Standard library imports
   2. Related third-party imports

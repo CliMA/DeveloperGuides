@@ -51,7 +51,7 @@ The `zero(x) * x` idiom ensures the result has the same type (including Dual par
 
 ## 4. Conservation invariants
 
-Mass, energy, and tracer conservation are verified at integration scale, not in unit tests. When changing a tendency, source term, or limiter, name the conservation test that should catch a bug — and if no test exists, add one or flag the gap. In ClimaAtmos this typically means a test under `test/conservation/` or a Buildkite job that monitors integrated diagnostics.
+Mass, energy, and tracer conservation are verified at integration scale, not in unit tests. When changing a tendency, source term, or limiter, name the conservation test that should catch a bug — and if no test exists, add one or flag the gap. Consult the repo-specific guide for the location of conservation tests and CI jobs.
 
 ## 5. Avoid `@assert` for runtime checks inside kernels
 

@@ -19,6 +19,8 @@ BenchmarkTools = "..."
 test = ["Test", "JuliaFormatter", "BenchmarkTools"]
 ```
 
+Alternatively, many CliMA repos (for example, Thermodynamics.jl, CloudMicrophysics.jl, SurfaceFluxes.jl, ClimaTimeSteppers.jl) use a **separate `test/Project.toml`** for test dependencies instead of the `[extras]`/`[targets]` pattern. Both approaches are acceptable; choose whichever the repo already uses.
+
 ## 2. Cross-package local development
 
 When developing across multiple local packages where the local branch version is higher than the current compat allows:
@@ -70,13 +72,19 @@ julia --project -e 'using PackageName'
 
 ## 4. Avoiding internal modules from dependencies
 
-Prefer standard Julia operations over internal modules from dependencies (for example, `ClimaCore.RecursiveApply`). Internal modules may be refactored or removed in future versions.
+Prefer standard Julia operations over internal modules from dependencies (for example, `ClimaCore.RecursiveApply`). Internal modules may be refactored or removed in future versions. This applies to downstream consumers; within ClimaCore itself, `RecursiveApply` is part of the internal API.
 
-| ❌ Discouraged | ✅ Preferred |
+| ❌ Discouraged (in downstream packages) | ✅ Preferred |
 |:---|:---|
 | `rzero(T)` | `zero(T)` |
 | `a ⊞ b` | `a + b` |
 | `a ⊠ b` | `a * b` |
+
+## 5. Licensing
+
+All CliMA repositories must include:
+- A `LICENSE` file (Apache License 2.0) in the repository root.
+- A `NOTICE` file containing the copyright statement.
 
 ## Self-correction
 

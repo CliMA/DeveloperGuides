@@ -2,31 +2,22 @@
 
 This guide defines the layered architecture used across CliMA model repositories and the rules that keep boundaries clean. Each repo's `*_specific.md` (linked from [AGENTS.md](../AGENTS.md)) maps these layers to its concrete directories.
 
-## 1. Core Computation vs. Orchestration
+## 1. Separation of concerns
 
-CliMA packages enforce a strict boundary between stateless mathematical/physical logic and stateful orchestration.
+Each CliMA package should keep distinct responsibilities in distinct files and modules. Common examples:
 
-```
-┌─────────────────────────────────────────────────────┐
-│  Stateless Core                                     │
-│  Pure functions, mathematical laws, algorithms.     │
-│  (e.g., phase equilibrium, RK stage updates)        │
-└────────────────────┬────────────────────────────────┘
-                     │ results (scalars / NamedTuples)
-┌────────────────────▼────────────────────────────────┐
-│  Orchestration / Infrastructure                     │
-│  State arrays, caching, broadcasting, and IO.       │
-│  (e.g., ClimaCore.Fields, memory allocation)        │
-└─────────────────────────────────────────────────────┘
-```
+- **Physics libraries** (Thermodynamics.jl, CloudMicrophysics.jl, SurfaceFluxes.jl): public functions should operate on scalar or tuple inputs and return scalars or `NamedTuple`s. They should not depend on `ClimaCore`, grid types, or memory allocation.
+- **Infrastructure libraries** (ClimaCore.jl, ClimaTimeSteppers.jl, ClimaComms.jl): own the data structures, discretization, and parallelism. They define the types that model repos compose.
+- **Parameter library** ([ClimaParams.jl](https://github.com/CliMA/ClimaParams.jl)): the central source of truth for physical constants and adjustable parameters that may be calibrated. All physics libraries read their constants from `ClimaParams`-derived parameter structs rather than hard-coding values.
+- **Model repos** (ClimaAtmos.jl, ClimaLand.jl, ClimaCoupler.jl): compose physics and infrastructure. Tendency functions call into physics libraries with extracted scalar values and write results back to fields via broadcasting.
 
-**Rule**: The stateless core should only operate on primitive types, tuples, and parameter containers. It must **never** know about the simulation's spatial grid, field types (like `ClimaCore.Field`), or parallelization strategy. If a file defines a mathematical or physical relationship, it must not contain memory allocation or broadcasting logic. All array broadcasting and state management belong in the orchestration layer.
+When adding new code, place it in the layer that owns the relevant concern. Do not embed broadcasting, field allocation, or IO inside physics functions, and do not re-implement numerical algorithms inside model-level tendency code.
 
 ## 2. Parameter container design
 
 - Containers should be focused on the specific physical or mathematical domain they serve.
 - Do not add "zombie" forward-compatibility fields to support not-yet-refactored callers; refactor the callers instead.
-- Exclude diagnostic or calibration parameters from physics containers; pass them explicitly from the infrastructure layer.
+- Keep parameter containers focused on physical constants and model parameters. Configuration flags, output options, and diagnostic metadata belong in the model's infrastructure layer, not in physics parameter structs.
 
 ## 3. Avoid hidden field dependencies
 

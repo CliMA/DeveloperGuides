@@ -30,7 +30,7 @@ Note: cutting a release is a maintainer action. Agents should add entries under 
 
 ### Badges
 
-Prefix entries with badge references to classify the change. The badge definitions live at the bottom of `NEWS.md` and must not be removed:
+In repos that use the badge convention (for example, ClimaAtmos, ClimaCore, ClimaTimeSteppers), prefix entries with badge references to classify the change. The badge definitions live at the bottom of `NEWS.md` and must not be removed:
 
 | Badge | When to use |
 |:---|:---|
@@ -40,6 +40,8 @@ Prefix entries with badge references to classify the change. The badge definitio
 | `![][badge-🚀performance]` | Performance improvements: fewer allocations, better inference |
 | `![][badge-✨feature/enhancement]` | New features |
 | `![][badge-🐛bugfix]` | Bug fixes |
+
+Not all repos use this convention. Smaller library repos (for example, CloudMicrophysics, SurfaceFluxes) may use plain-text entries. Match the convention already in the repo's `NEWS.md`.
 
 ### Example
 

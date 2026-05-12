@@ -121,9 +121,9 @@ isbits(CUDA.cudaconvert(A(...)))
 
 In the wrapping case, also define `Adapt.adapt_structure` so the post-adapt object actually becomes `isbits`.
 
-## 8. Do not use `mutable struct`
+## 8. Prefer immutable structs
 
-Prefer immutable structs. Only use mutability when required and explicitly justified.
+Prefer immutable structs for types that are passed into GPU kernels or broadcast expressions. `mutable struct` is acceptable for infrastructure types that are never passed into kernels — for example, grid objects (`ClimaCore.Grids`), topologies, and time-stepping integrators (`ClimaTimeSteppers.TimeStepperIntegrator`).
 
 ## 9. Prefer `SVector` or `Tuple` over `Vector` / `Array`
 
@@ -150,7 +150,7 @@ Follow project conventions that avoid `@views`.
 
 Prefer `function f(x, y)` over `function f(x::FT, y::FT) where {FT}` in tendency and physics functions. The `where {FT}` form binds every annotated argument to the *same* concrete element type, which rejects mixed-AD calls (e.g. `f(Dual(1.0), 2.0)`) and rejects `ClimaCore.Field`s whose `eltype`s differ from each other or from a `Float`. Duck typing lets each argument carry its own type and lets AD flow through naturally.
 
-Exception: struct constructors that statically allocate `SVector`/`SMatrix` need `::Type{FT}` to determine the element type at compile time.
+Exception: struct constructors that statically allocate `SVector`/`SMatrix` need `::Type{FT}` to determine the element type at compile time. Some library repos (for example, CloudMicrophysics.jl) use `where {FT}` broadly for internal physics functions to enforce homogeneous numeric types. The duck-typing guidance is strongest for model-side code and functions where AD must differentiate through mixed-type arguments.
 
 Bad:
 
@@ -309,7 +309,7 @@ end
 
 ## 22. Use SafeTestsets.jl to avoid leaky unit tests
 
-When unit testing, use `@safetestset` instead of standard `include` or `@testset` to prevent variables and imports from leaking between test files.
+When unit testing, prefer `@safetestset` over standard `@testset` with nested `include` to prevent variables and imports from leaking between test files. This pattern is used by ClimaAtmos, ClimaCore, ClimaTimeSteppers, ClimaLand, and ClimaCoupler.
 
 Bad:
 

@@ -7,7 +7,7 @@ This guide covers patterns and pitfalls for writing high-performance, GPU-compat
 The rules below apply whenever the surrounding code is a *kernel* or runs inside a *hot path*. Define both concretely:
 
 - **Kernel**: the right-hand side of a `@.` broadcast, the body of a `ClimaCore.lazy()` expression, the closure passed to `Operators.column_integral_*`, `Operators.column_reduce!`, or `Fields.bycolumn`, and any function transitively `@inline`d into one of the above.
-- **Hot path**: any function called once per timestep (or once per Runge–Kutta stage) for every column or every grid point. Concretely: tendency functions in `prognostic_equations/`, the entries of `parameterized_tendencies/`, the `set_*_precomputed_quantities!` family in `cache/`, the Jacobian-update functions, and any `@.` broadcast they execute.
+- **Hot path**: any function called once per timestep (or once per Runge–Kutta stage) for every column or every grid point. In model repos this includes tendency functions, precomputed-quantity setters, and Jacobian-update functions. In library repos (e.g. Thermodynamics.jl, CloudMicrophysics.jl), it includes any function that is designed to be called from a broadcast kernel.
 
 If a function is called in either context, treat every rule in this file and in [software_design_patterns.md](../architecture/software_design_patterns.md) as binding.
 
@@ -169,7 +169,7 @@ If the post-adapt check returns `false`, check for:
 - `Vector` or `Array` fields that aren't backed by a `CuArray` and don't have an `Adapt.adapt_structure` method (use `SVector`/`Tuple`, or add an `Adapt` rule that rewrites the field to a device-side equivalent)
 - `String` fields
 - `Function` fields without a type parameter (use `struct A{F <: Function}; f::F; end`)
-- `mutable struct` (use immutable structs)
+- `mutable struct` (prefer immutable structs for data passed into kernels; `mutable struct` is acceptable for infrastructure objects like grids and integrators that are never passed into kernels)
 
 When defining a new struct that wraps device-resident arrays, add an `Adapt.adapt_structure(to, x::MyStruct) = MyStruct(adapt(to, x.field1), ...)` method so the post-adapt object becomes `isbits`.
 

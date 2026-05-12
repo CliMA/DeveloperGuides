@@ -28,13 +28,13 @@ If this repo is mounted as a submodule, the consuming repo's own `AGENTS.md` sho
 
 ## Infrastructure
 
-13. [testing_and_validation.md](infrastructure/testing_and_validation.md) — type-stability checks, Aqua.jl, allocation regression, AD tests.
-14. [clima_comms.md](infrastructure/clima_comms.md) — device-agnostic and MPI-distributed code patterns.
+14. [testing_and_validation.md](infrastructure/testing_and_validation.md) — type-stability checks, Aqua.jl, allocation regression, AD tests.
+15. [clima_comms.md](infrastructure/clima_comms.md) — device-agnostic and MPI-distributed code patterns.
 
 ## Workflow
 
-15. [agent_autonomy.md](workflow/agent_autonomy.md) — actions that require explicit user approval.
-16. [review.md](workflow/review.md) — PR review instructions and checklist.
+16. [agent_autonomy.md](workflow/agent_autonomy.md) — actions that require explicit user approval.
+17. [review.md](workflow/review.md) — PR review instructions and checklist.
 
 ## Self-correction
 
