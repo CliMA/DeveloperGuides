@@ -2,6 +2,7 @@
 
 Shared engineering standards, architectural patterns, and development guidelines for human and AI developers across the [CliMA](https://clima.caltech.edu) ecosystem.
 
+|                              |                                                  |
 |-----------------------------:|:-------------------------------------------------|
 | **License**                  | [![license][license-img]][license-url]            |
 
