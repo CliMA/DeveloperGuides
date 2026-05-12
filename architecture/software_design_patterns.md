@@ -213,7 +213,7 @@ acc = zero(x)
 
 On SIMT architectures, threads in a warp execute in lockstep. A data-dependent `if/else` serializes the two branches across threads (warp divergence). Use `ifelse(cond, a, b)` to compute branchlessly.
 
-**Critical**: both arguments to `ifelse` are always evaluated. Guard mathematically invalid operations (`log`, `sqrt`, division) with `max(x, eps(x))` *before* passing them as arguments — never inside a `begin...end` block inside `ifelse`.
+**Critical**: both arguments to `ifelse` are always evaluated. Guard mathematically invalid operations (`log`, `sqrt`, division) with `max(x, eps(eltype(x)))` *before* passing them as arguments — never inside a `begin...end` block inside `ifelse`.
 
 Bad:
 
@@ -230,7 +230,7 @@ Preferred:
 
 ```julia
 # Branchless; safe_x guards log
-safe_x = max(x, eps(x))
+safe_x = max(x, eps(eltype(x)))
 log_term = log(safe_x) + one(x)
 result = ifelse(x > zero(x), log_term, zero(x))
 ```

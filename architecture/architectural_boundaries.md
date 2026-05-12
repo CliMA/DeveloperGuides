@@ -2,26 +2,29 @@
 
 This guide defines the layered architecture used across CliMA model repositories and the rules that keep boundaries clean. Each repo's `*_specific.md` (linked from [AGENTS.md](../AGENTS.md)) maps these layers to its concrete directories.
 
-## 1. Layer diagram
+## 1. Core Computation vs. Orchestration
+
+CliMA packages enforce a strict boundary between stateless mathematical/physical logic and stateful orchestration.
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│  Parameterizations layer                            │
-│  Defines HOW a physical tendency is computed.       │
+│  Stateless Core                                     │
+│  Pure functions, mathematical laws, algorithms.     │
+│  (e.g., phase equilibrium, RK stage updates)        │
 └────────────────────┬────────────────────────────────┘
                      │ results (scalars / NamedTuples)
 ┌────────────────────▼────────────────────────────────┐
-│  Infrastructure layer                               │
-│  Defines WHERE results are stored and HOW the model │
-│  time-steps them.                                   │
+│  Orchestration / Infrastructure                     │
+│  State arrays, caching, broadcasting, and IO.       │
+│  (e.g., ClimaCore.Fields, memory allocation)        │
 └─────────────────────────────────────────────────────┘
 ```
 
-**Rule**: if a file defines how a physical tendency is calculated, it belongs in the parameterizations layer. If it only defines where a result is stored or how it is integrated, it belongs in the infrastructure layer. Do not put orchestration logic in physics files.
+**Rule**: The stateless core should only operate on primitive types, tuples, and parameter containers. It must **never** know about the simulation's spatial grid, field types (like `ClimaCore.Field`), or parallelization strategy. If a file defines a mathematical or physical relationship, it must not contain memory allocation or broadcasting logic. All array broadcasting and state management belong in the orchestration layer.
 
 ## 2. Parameter container design
 
-- Containers should be focused on the prognostic tendencies they serve.
+- Containers should be focused on the specific physical or mathematical domain they serve.
 - Do not add "zombie" forward-compatibility fields to support not-yet-refactored callers; refactor the callers instead.
 - Exclude diagnostic or calibration parameters from physics containers; pass them explicitly from the infrastructure layer.
 
