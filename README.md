@@ -2,7 +2,6 @@
 
 Shared engineering standards, architectural patterns, and development guidelines for human and AI developers across the [CliMA](https://clima.caltech.edu) ecosystem.
 
-|||
 |-----------------------------:|:-------------------------------------------------|
 | **License**                  | [![license][license-img]][license-url]            |
 
@@ -18,6 +17,7 @@ git submodule add https://github.com/CliMA/DeveloperGuides.git docs/dev-guides
 ```
 
 The consuming repo keeps its own `AGENTS.md` at the root, which references:
+
 1. `docs/dev-guides/AGENTS.md` — the shared guide index
 2. A repo-specific guide (e.g., `docs/agents/clima_atmos_specific.md`)
 

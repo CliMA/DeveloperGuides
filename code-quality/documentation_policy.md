@@ -4,26 +4,37 @@ This guide defines the standards for repository-level documentation and docstrin
 
 ## 1. Goal and Purpose
 
-CliMA is committed to producing high-quality, well-documented software. **Our goals are to foster shared code ownership and to prevent siloed knowledge**. 
+CliMA is committed to producing high-quality, well-documented software. **Our goals are to foster shared code ownership and to prevent siloed knowledge**.
 
 Documentation should focus on explaining the **design, purpose, and behavior** of code. It should be embedded in the code and consist of the "minimally viable documentation" that allows a technically versed programmer who is not an expert in the subject matter to understand and use it.
+
 - **Do not** document mechanical implementation details ("What a code does in detail should be as self-explanatory as possible").
 - **Do** document interfaces, expected behavior, and provide short examples.
 
 ## 2. Repository Documentation
 
-All repositories must include the following high-priority documentation sections (typically in `docs/src` or `README.md`):
+All repositories must include the following high-priority documentation sections (typically in `docs/src/` or `README.md`):
+
 1. **Home**: Briefly describe the repository and include links to important subcomponents.
 2. **Examples**: Simple examples showing main uses.
-3. **API**: Interface concepts, purpose, and function signatures.
-4. **Contribution Guidelines**: How to contribute (PRs, style guide, CI).
+3. **API reference**: Interface concepts, purpose, and function signatures.
+4. **Contribution guidelines**: How to contribute (PRs, style guide, CI).
 
-Low-priority sections to add over time include Theory/Technical Docs, How-to-Guides, Tutorials, References, and Acknowledgements.
+### Organizing documentation by user need
+
+Good documentation serves distinct user needs. The [Diátaxis](https://diataxis.fr/) framework identifies four:
+
+- **Tutorials / walkthroughs** — learning-oriented material that guides a newcomer through a meaningful exercise. The reader should *do* something and gain confidence. State the goal up front ("In this tutorial we will compute saturation-adjusted profiles for a moist atmosphere"), deliver visible results at every step, and minimize theoretical digressions. In practice, tutorials often interleave brief explanations of the underlying physics — this is fine, as long as the doing remains the spine of the narrative. Test tutorials in CI (e.g., via Literate.jl) so they never silently break.
+- **How-to guides** — task-oriented directions for someone who already knows what they want to achieve. Title them as verb phrases ("How to add a new parameterization," "How to run on GPU," not "GPU support"). Focus on action, not theory; link to explanatory pages when background is needed. A how-to guide that only works for one narrow case is rarely useful — show how to adapt the approach.
+- **Reference** — information-oriented material (API docs, configuration options, data formats). Keep entries structured consistently and generate them from code where possible (Documenter.jl `@autodocs`).
+- **Explanation** — understanding-oriented discussion: derivations, design rationale, trade-offs. This is the right place for mathematical formulations and theory.
+
+These categories are a guide, not a rigid partition. In CliMA repos, theory and worked examples are often interleaved; for instance, Thermodynamics.jl pairs a *Mathematical Formulation* page with a *How-To Guide* and *Temperature Profiles* walkthrough, while SurfaceFluxes.jl blends *Surface Fluxes Theory*, *Universal Functions*, and *Physical Scales* pages alongside its *API Reference*. What matters is that each page has a clear primary purpose and that the reader can quickly find what they need.
 
 ### Tools
 
 - Use [Documenter.jl](https://juliadocs.github.io/Documenter.jl/stable/) for rendering docstrings on documentation pages.
-- Use [Literate.jl](https://fredrikekre.github.io/Literate.jl/stable/) to generate markdown and Jupyter-notebook-style examples.
+- Use [Literate.jl](https://fredrikekre.github.io/Literate.jl/stable/) to generate markdown and Jupyter-notebook-style examples. Literate.jl scripts are ideal for tutorials because they can be tested in CI.
 - Documentation sources live in `docs/src/`; tutorials in `tutorials/` (if present).
 
 ### Licensing
