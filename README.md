@@ -51,8 +51,9 @@ git commit -m "chore: update DeveloperGuides submodule"
 ### 🔧 **Code Quality**
 
 - [**Code Style**](code-quality/code_style.md) — formatting, variable locality, Git workflow, feature removal.
-- [**Docstring Standard**](code-quality/docstring_standard.md) — docstring layout and conventions.
+- [**Documentation Policy**](code-quality/documentation_policy.md) — docstrings, repository-level docs, minimally viable documentation.
 - [**Changelog Hygiene**](code-quality/changelog_hygiene.md) — when and how to write `NEWS.md` entries.
+- [**Variable List**](code-quality/variable_list.md) — standardized CliMA variable naming conventions.
 
 ### 🧪 **Infrastructure**
 

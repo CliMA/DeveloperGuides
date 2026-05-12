@@ -92,6 +92,18 @@ When a feature is deprecated or removed, follow the full cleanup protocol:
 4. **Dependency slimming**: remove packages that were exclusively used by the removed feature from `Project.toml`. See [Dependency Management Guide](../architecture/dependency_management.md).
 5. **Documentation update**: update docstrings and docs to reflect the removal.
 
+## 6. Naming and Syntax conventions
+
+- **Unicode**: Limit use of Unicode. Avoid accents (dot, hat, vec) that create visually ambiguous characters. Use only standard Greek letters (e.g. `α`, `β`, `Δ`) and common math symbols (`∇`, `∂`, `∫`).
+- **Capitalization**: Modules and structs should use `TitleCase`.
+- **Functions**: Function names should be lowercase with words separated by underscores.
+- **Variables**: Follow the conventions in the [Variable List](variable_list.md). Avoid 1-character names like `l` (lowercase el), `O` (uppercase oh), or `I` (uppercase eye).
+- **Line length**: Try to limit lines to 78 characters.
+- **Imports**: Group `using`/`import` statements in the following order, separated by blank lines:
+  1. Standard library imports
+  2. Related third-party imports
+  3. Local/application-specific imports
+
 ## Self-correction
 
 If this guide is discovered to be stale or missing a pattern, update it.

@@ -306,3 +306,33 @@ Preferred:
     # ...
 end
 ```
+
+## 22. Use SafeTestsets.jl to avoid leaky unit tests
+
+When unit testing, use `@safetestset` instead of standard `include` or `@testset` to prevent variables and imports from leaking between test files.
+
+Bad:
+
+```julia
+@testset "MyPackage" begin
+    include("test_module_A.jl")
+    include("test_module_B.jl")
+end
+```
+
+Preferred:
+
+```julia
+using SafeTestsets
+
+@safetestset "Test module A" begin
+    @time include("test_module_A.jl")
+end
+@safetestset "Test module B" begin
+    @time include("test_module_B.jl")
+end
+```
+
+## 23. Do not use list comprehensions
+
+Avoid list comprehensions like `[getproperty(dist, p) for p in params]` in hot paths or GPU code, as they explicitly allocate `Array`s on the heap. Use `map` with `SVector` or `Tuple` instead.

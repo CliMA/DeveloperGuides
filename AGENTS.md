@@ -22,8 +22,9 @@ If this repo is mounted as a submodule, the consuming repo's own `AGENTS.md` sho
 ## Code Quality
 
 10. [code_style.md](code-quality/code_style.md) — formatting, variable locality, Git workflow, feature removal.
-11. [docstring_standard.md](code-quality/docstring_standard.md) — docstring layout and conventions.
+11. [documentation_policy.md](code-quality/documentation_policy.md) — docstrings, repository-level docs, minimally viable documentation.
 12. [changelog_hygiene.md](code-quality/changelog_hygiene.md) — when and how to write `NEWS.md` entries.
+13. [variable_list.md](code-quality/variable_list.md) — standardized CliMA variable naming conventions.
 
 ## Infrastructure
 

@@ -1,8 +1,28 @@
-# Docstring Standard
+# Software Documentation Policy
 
-This guide defines the layout and conventions for docstrings across CliMA repositories.
+This guide defines the standards for repository-level documentation and docstrings across CliMA repositories.
 
-## Structure
+## 1. Goal and Purpose
+
+CliMA is committed to producing high-quality, well-documented software. **Our goals are to foster shared code ownership and to prevent siloed knowledge**. 
+
+Documentation should focus on explaining the **design, purpose, and behavior** of code. It should be embedded in the code and consist of the "minimally viable documentation" that allows a technically versed programmer who is not an expert in the subject matter to understand and use it.
+- **Do not** document mechanical implementation details ("What a code does in detail should be as self-explanatory as possible").
+- **Do** document interfaces, expected behavior, and provide short examples.
+
+## 2. Repository Documentation
+
+All repositories must include the following high-priority documentation sections (typically in `docs/src` or `README.md`):
+1. **Home**: Briefly describe the repository and include links to important subcomponents.
+2. **Examples**: Simple examples showing main uses.
+3. **API**: Interface concepts, purpose, and function signatures.
+4. **Contribution Guidelines**: How to contribute (PRs, style guide, CI).
+
+Low-priority sections to add over time include Theory/Technical Docs, How-to-Guides, Tutorials, References, and Acknowledgements.
+
+## 3. Docstring Standard
+
+### Structure
 
 1. **One-line summary**: a single sentence explaining what the function or struct does.
 2. **Details (optional)**: a brief paragraph with additional context or mathematical formulas.
