@@ -28,15 +28,17 @@ This makes physics refactors in sub-packages safe without cascading breakage in 
 Bad:
 
 ```julia
-# Brittle: depends on internal field names of a microphysics struct
-w_sed = cm2p.rtv + cm2p.ctv
+# Brittle: depends on the *internal* field names of a microphysics scheme
+# struct that are not part of its documented API.
+rain_terminal_velocity_coeff = cm1m_internal.rtv_coeff
 ```
 
 Preferred:
 
 ```julia
-# Robust: access from the primary, stable parameter source
-w_sed = cmc.Ch2022.rain + cmc.stokes.liquid
+# Robust: access the documented public field of the unified terminal-velocity
+# container (CloudMicrophysics.Parameters.TerminalVelocityParams).
+rain_velocity_params = tv_params.chen2022.rain
 ```
 
 ## 4. Module import rules

@@ -41,13 +41,13 @@ When used inside `ifelse`, the guard must be applied **before** the `ifelse` cal
 
 ## 3. AD-compatible clamping
 
-Standard `clamp(x, low, high)` is generally safe for most uses. For zero-clamping where gradient information must be preserved through the zero boundary, use this idiom:
+Standard `clamp(x, low, high)` is generally safe for most uses. For zero-clamping, the canonical CliMA idiom is `max(zero(x), x)` (exported as `CloudMicrophysics.Utilities.clamp_to_nonneg`):
 
 ```julia
-@inline clamp_to_nonneg(x) = ifelse(x < zero(x), zero(x) * x, x)
+@inline clamp_to_nonneg(x) = max(zero(x), x)
 ```
 
-The `zero(x) * x` idiom ensures the result has the same type (including Dual partials for AD) as `x`, while the value is zeroed.
+`max` is differentiable in the active branch and propagates Dual partials through whichever argument wins. A branchless equivalent is `ifelse(x < zero(x), zero(x) * x, x)`, where `zero(x) * x` ensures the negative branch carries the same type (including Dual partials) as `x`.
 
 ## 4. Conservation invariants
 

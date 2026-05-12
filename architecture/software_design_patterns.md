@@ -309,7 +309,7 @@ end
 
 ## 22. Use SafeTestsets.jl to avoid leaky unit tests
 
-When unit testing, prefer `@safetestset` over standard `@testset` with nested `include` to prevent variables and imports from leaking between test files. This pattern is used by ClimaAtmos, ClimaCore, ClimaTimeSteppers, ClimaLand, and ClimaCoupler.
+When unit testing, prefer `@safetestset` over standard `@testset` with nested `include` to prevent variables and imports from leaking between test files. Model repos with many independent test files (ClimaAtmos, ClimaLand, ClimaCoupler, ClimaTimeSteppers) use `@safetestset`. ClimaCore uses a custom `UnitTest` driver (`test/tabulated_tests.jl`) that achieves the same isolation. Physics-library repos (Thermodynamics, CloudMicrophysics, SurfaceFluxes) use plain `@testset`s; if you add a new test file there, prefer `@safetestset` for new isolation-sensitive tests.
 
 Bad:
 

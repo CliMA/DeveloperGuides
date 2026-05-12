@@ -19,19 +19,22 @@ Treat anything not in the package's `docs/` as internal and unstable.
 
 ## Thermodynamics.jl
 
-- Pass `thermo_params` from the model parameter store; do not hard-code thermodynamic constants.
-- Use functional constructors from the current public API (for example, `TD.air_temperature`). Confirm the call site against the sources listed above before writing new code.
+- Pass the thermodynamics parameter container (e.g. `p.params.thermodynamics_params` in ClimaAtmos) into thermodynamic functions; do not hard-code thermodynamic constants.
+- The public API is fully functional and stateless: functions take a parameter container and the relevant scalar arguments directly.
+- Many functions are dispatched on a *formulation type* that names the independent variables. The available formulations (subtypes of `IndepVars`) are `TD.ρe()`, `TD.pe()`, `TD.ph()`, `TD.pρ()`, `TD.pθ_li()`, `TD.ρθ_li()`. For example: `TD.air_temperature(thp, TD.ph(), h, q_tot, q_liq, q_ice)`.
 - For iterative phase-equilibrium calculations inside GPU kernels, prefer variants that accept a fixed iteration count to avoid thread divergence. See [SDP 19](software_design_patterns.md).
 
 ## CloudMicrophysics.jl
 
-- The microphysics scheme is passed as a singleton type; dispatch on it eliminates dead branches at compile time.
-- Return values are `NamedTuple`s. Materialize them into a pre-allocated `NamedTuple`-of-`Field`s scratch slot in the cache and then issue one `@.` broadcast per target field — see the "Materialization" and "Multi-field updates" subsections in [GPU Performance Guide §3](../performance/gpu_performance.md).
+- The microphysics scheme is passed as a singleton type (e.g. `Microphysics0Moment()`, `Microphysics1Moment()`, `Microphysics2Moment()`); dispatch on it eliminates dead branches at compile time.
+- The bulk-tendency wrappers (e.g. `bulk_microphysics_tendencies`) return `NamedTuple`s. Materialize them into a pre-allocated `NamedTuple`-of-`Field`s scratch slot in the cache and then issue one `@.` broadcast per target field — see the "Materialization" and "Multi-field updates" subsections in [GPU Performance Guide §3](../performance/gpu_performance.md). Process-rate primitives (e.g. `accretion`, `terminal_velocity`, `conv_q_icl_to_q_sno`) return scalars and can be broadcast directly.
+- The terminal-velocity parameters live in a unified container `CMP.TerminalVelocityParams` with fields `stokes`, `chen2022`, `blk1m`. Use these documented fields rather than poking into internal scheme-specific structs.
 
 ## SurfaceFluxes.jl
 
-- Pass a fully-typed `SurfaceFluxes.Parameters` container; do not hard-code flux constants.
-- Surface flux computation is expensive; call it once per stage in the infrastructure layer, not inside tendency hot paths.
+- Pass a `SurfaceFluxes.Parameters.SurfaceFluxesParameters` container (the concrete subtype of `AbstractSurfaceFluxesParameters`); do not hard-code flux constants.
+- Surface flux computation is expensive (root-finding on the Monin–Obukhov length); call it once per stage in the infrastructure layer, not inside tendency hot paths.
+- Public entry points include `surface_fluxes` (the bulk solver), `sensible_heat_flux`, `latent_heat_flux`, and `compute_profile_value` (for recovering profile values at a given height). Round-trip tests against these are an idiomatic way to validate flux changes — see [testing_and_validation.md §"Round-trip"](../infrastructure/testing_and_validation.md).
 
 ## ClimaParams.jl
 
@@ -39,11 +42,11 @@ Treat anything not in the package's `docs/` as internal and unstable.
 
 ```julia
 # ❌ Captures the full params container — may exceed GPU parameter memory
-@. result = TD.air_temperature(p.params.thermo_params, Y.c.ρe, Y.c.ρ)
+@. ᶜT = TD.air_temperature(p.params, TD.ρe(), Y.c.ρe / Y.c.ρ, Y.c.ρq_tot / Y.c.ρ)
 
 # ✅ Extract the sub-struct; only it enters the kernel
-thp = p.params.thermo_params
-@. result = TD.air_temperature(thp, Y.c.ρe, Y.c.ρ)
+thp = p.params.thermodynamics_params
+@. ᶜT = TD.air_temperature(thp, TD.ρe(), Y.c.ρe / Y.c.ρ, Y.c.ρq_tot / Y.c.ρ)
 ```
 
 ## General cross-repo guidance

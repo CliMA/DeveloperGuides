@@ -12,15 +12,15 @@ julia -e 'using JuliaFormatter; format(".")'
 
 ### Version consistency
 
-Match the major version of `JuliaFormatter` used in CI to prevent unnecessary diff churn. Most CliMA repos use the `julia-actions/julia-format` GitHub Action:
+Match the JuliaFormatter version used in CI to prevent unnecessary diff churn. Repos use the `julia-actions/julia-format` GitHub Action and pin a JuliaFormatter major version via the `version:` input:
 
 ```yaml
 - uses: julia-actions/julia-format@v4
   with:
-    version: '1'
+    version: '1'   # JuliaFormatter major version; check the repo's workflow file
 ```
 
-Note: the legacy `.dev/climaformat.jl` script has been deprecated. Use `julia -e 'using JuliaFormatter; format(".")'` directly.
+Note: the JuliaFormatter major version is not uniform across CliMA repos — some pin `'1'`, others `'2'`, and some leave the default. Always cross-check `.github/workflows/JuliaFormatter.yml` (or `julia_formatter.yml`) in the repo you're working in before formatting. Run the formatter with `julia -e 'using JuliaFormatter; format(".")'` from the repo root.
 
 ### Avoiding formatting noise
 

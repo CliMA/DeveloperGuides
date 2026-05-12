@@ -21,7 +21,7 @@ Work in this order:
 - [ ] Check behavior, numerics, stability, conservation, restart reproducibility, diagnostics, and config semantics.
 - [ ] Prioritize high-risk areas: implicit solver, Jacobian, prognostic equations, parameterized tendencies, restart logic, and output/reproducibility paths.
 - [ ] Label concerns as one of: definite bug, likely regression, or plausible risk.
-- [ ] Flag any user-visible config key, diagnostic name, default, release-facing behavior, or CLI flag change that is missing a `NEWS.md` entry. See [changelog_hygiene.md](../code-quality/changelog_hygiene.md).
+- [ ] Flag any user-visible config key, diagnostic name, default, release-facing behavior, or CLI flag change that is missing a `NEWS.md` entry. See [changelogs_and_versions.md](../code-quality/changelogs_and_versions.md).
 
 ### Validation
 

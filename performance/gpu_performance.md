@@ -60,12 +60,14 @@ Validation: after a warm-up call, `@allocated integrate(functor, data)` should r
 
 ### When to use `lazy()`
 
-Use `@. lazy(expr)` for any intermediate computed quantity that is consumed by a subsequent broadcast. This prevents heap allocation of a temporary `Field`.
+`lazy` is exported by the [`LazyBroadcast.jl`](https://github.com/CliMA/LazyBroadcast.jl) package (`import LazyBroadcast: lazy`) and is re-exported through `ClimaCore`. Use `@. lazy(expr)` for any intermediate computed quantity that is consumed by a subsequent broadcast — it prevents heap allocation of a temporary `Field`.
 
 ```julia
 # ✅ Lazy: no temporary Field allocated
-T = @. lazy(air_temperature(thp, ts))
-result = @. lazy(physics_func(T, ρ))
+ᶜT = @. lazy(TD.air_temperature(thp, TD.ρe(), Y.c.ρe / Y.c.ρ,
+                                Y.c.ρq_tot / Y.c.ρ, Y.c.ρq_liq / Y.c.ρ,
+                                Y.c.ρq_ice / Y.c.ρ))
+result = @. lazy(physics_func(ᶜT, Y.c.ρ))
 @. output_field = result  # terminal: fuses everything into one kernel
 ```
 

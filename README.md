@@ -36,6 +36,7 @@ git commit -m "chore: update DeveloperGuides submodule"
 ### 🏗️ **Architecture**
 
 - [**Repo Structure**](architecture/repo_structure.md) — how to navigate any CliMA Julia package.
+- [**Ecosystem Conventions**](architecture/ecosystem_conventions.md) — module aliases, state layout (`Y`/`Yₜ`/`p`), `ᶜ`/`ᶠ` notation, CI, reproducibility, diagnostics.
 - [**Architectural Boundaries**](architecture/architectural_boundaries.md) — layered architecture and boundary rules.
 - [**Software Design Patterns**](architecture/software_design_patterns.md) — numbered SDPs: branchless logic, functors, parameter extraction, etc.
 - [**Cross-Repo Contracts**](architecture/cross_repo_contracts.md) — call-site conventions for ecosystem packages.
@@ -47,12 +48,13 @@ git commit -m "chore: update DeveloperGuides submodule"
 - [**Type Stability**](performance/type_stability.md) — Float32 compatibility, inference checks, struct field rules.
 - [**Numerical Robustness**](performance/numerical_robustness.md) — denominator regularization, clamping, NaN/Inf avoidance.
 - [**AD Compatibility**](performance/ad_compatibility.md) — AD-safe patterns for ForwardDiff and Enzyme.
+- [**Allocation Debugging**](performance/allocation_debugging.md) — locating heap allocations with `Profile.Allocs`, JET, flame graphs.
 
 ### 🔧 **Code Quality**
 
 - [**Code Style**](code-quality/code_style.md) — formatting, variable locality, Git workflow, feature removal.
 - [**Documentation Policy**](code-quality/documentation_policy.md) — docstrings, repository-level docs, minimally viable documentation.
-- [**Changelog Hygiene**](code-quality/changelog_hygiene.md) — when and how to write `NEWS.md` entries.
+- [**Changelogs and Versioning**](code-quality/changelogs_and_versions.md) — `NEWS.md` format, SemVer rules, and the release/tagging flow.
 - [**Variable List**](code-quality/variable_list.md) — standardized CliMA variable naming conventions.
 
 ### 🧪 **Infrastructure**
@@ -64,6 +66,7 @@ git commit -m "chore: update DeveloperGuides submodule"
 
 - [**Agent Autonomy**](workflow/agent_autonomy.md) — actions that require explicit user approval.
 - [**PR Review**](workflow/review.md) — review instructions and checklist.
+- [**CI Triage**](workflow/ci_triage.md) — checklist for "passes locally, fails on CI" failure modes.
 
 ## Directory Structure
 
