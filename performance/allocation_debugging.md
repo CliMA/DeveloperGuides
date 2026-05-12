@@ -23,7 +23,7 @@ When the test fails, the next sections tell you how to localize the cause.
 
 ## 2. Localizing an allocation: `Profile.Allocs`
 
-`@allocated` tells you *that* there is an allocation but not *where*. `Profile.Allocs` (Julia ≥ 1.8, stdlib) does. The pattern used in `CloudMicrophysics.test/performance_tests.jl`:
+`@allocated` tells you *that* there is an allocation but not *where*. `Profile.Allocs` (a stdlib module on currently supported Julia versions) does. The pattern used in `CloudMicrophysics.test/performance_tests.jl`:
 
 ```julia
 import Profile
