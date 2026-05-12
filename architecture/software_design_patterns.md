@@ -83,7 +83,7 @@ Struct fields should be concrete/parametric for type stability and performance.
 
 ## 5. Avoid broadcast from within kernels
 
-GPU compilers can fail to infer through broadcast inside kernels. Prefer explicit, inference-friendly kernel code. See [gpu_performance.md](gpu_performance.md) for the canonical definition of "kernel" and "hot path".
+GPU compilers can fail to infer through broadcast inside kernels. Prefer explicit, inference-friendly kernel code. See [gpu_performance.md](../performance/gpu_performance.md) for the canonical definition of "kernel" and "hot path".
 
 ## 6. Do not use `Function` as a struct field type
 
@@ -113,7 +113,7 @@ For a new struct that does not wrap device-resident arrays, the host-side check 
 isbits(A(...))
 ```
 
-For a struct that *does* wrap a `Field`, `CuArray`, or similar, the meaningful check is the post-adapt one (see [gpu_performance.md §8](gpu_performance.md)):
+For a struct that *does* wrap a `Field`, `CuArray`, or similar, the meaningful check is the post-adapt one (see [gpu_performance.md §8](../performance/gpu_performance.md)):
 
 ```julia
 isbits(CUDA.cudaconvert(A(...)))

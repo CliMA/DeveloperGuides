@@ -46,7 +46,7 @@ Fails at test time if the return type is not fully inferred by the compiler. Use
 
 ## 3. Abstract types in struct fields
 
-Struct fields should be concrete or parametric for type stability and performance. See [SDP 4](software_design_patterns.md).
+Struct fields should be concrete or parametric for type stability and performance. See [SDP 4](../architecture/software_design_patterns.md).
 
 ### Splitting dispatch on `Union{T, Nothing}`
 

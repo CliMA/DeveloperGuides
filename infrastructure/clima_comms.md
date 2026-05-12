@@ -98,7 +98,7 @@ Use this pattern when adding a new GPU test entry point so all packages stay con
 
 - **Implicit host transfer**: `sum(field)` on a GPU field is fine; `field[1]` is not. The first goes through a GPU reduction; the second triggers `allowscalar` and either errors (recommended) or silently transfers.
 - **Random number streams under MPI**: `rand()` is not synchronized across ranks. Seed explicitly per rank, or generate randomness on root and broadcast.
-- **`println` inside kernels**: not GPU-compatible and not MPI-safe. See [gpu_performance.md](gpu_performance.md) §7 for the static-error rule.
+- **`println` inside kernels**: not GPU-compatible and not MPI-safe. See [gpu_performance.md](../performance/gpu_performance.md) §7 for the static-error rule.
 - **Saving to a shared filesystem from every rank**: causes file lock contention. Use root-only IO or rank-suffixed filenames.
 
 ## Self-correction

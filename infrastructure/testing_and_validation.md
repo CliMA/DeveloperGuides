@@ -4,7 +4,7 @@ This guide covers testing patterns for CliMA code: type-stability verification, 
 
 ## Type-stability checks
 
-The canonical home for type-stability tooling (`@inferred`, `JET.@report_opt`, `@code_warntype`, the Float32/Float64 test template) is [type_stability.md](type_stability.md). Use `@inferred` as a CI regression gate for any new physics function:
+The canonical home for type-stability tooling (`@inferred`, `JET.@report_opt`, `@code_warntype`, the Float32/Float64 test template) is [type_stability.md](../performance/type_stability.md). Use `@inferred` as a CI regression gate for any new physics function:
 
 ```julia
 @test @inferred(my_physics_func(FT(1.0), FT(2.0))) isa FT
@@ -27,7 +27,7 @@ Allocation benchmarks in `perf/` are not run automatically in CI. Allocation reg
 
 All CliMA packages run `Aqua.jl` tests in CI. These checks catch common package quality issues:
 
-- `test_stale_deps`: fails if a package in `[deps]` is not used in source code. This is the most common failure — usually caused by adding a dev tool to `[deps]` instead of `[extras]` (see [Dependency Management](dependency_management.md)).
+- `test_stale_deps`: fails if a package in `[deps]` is not used in source code. This is the most common failure — usually caused by adding a dev tool to `[deps]` instead of `[extras]` (see [Dependency Management](../architecture/dependency_management.md)).
 - `test_deps_compat`: fails if `[compat]` entries are missing for dependencies.
 - `test_undefined_exports`: fails if an exported symbol is not defined.
 - `test_unbound_args`: detects methods with unbound type parameters (can cause ambiguities).
@@ -68,7 +68,7 @@ function check_derivative(f, x; rtol = 5e-2, atol = 1e-8)
 end
 ```
 
-When adding new physics functions, add corresponding AD tests. See [AD Compatibility](ad_compatibility.md).
+When adding new physics functions, add corresponding AD tests. See [AD Compatibility](../performance/ad_compatibility.md).
 
 ## GPU test files
 

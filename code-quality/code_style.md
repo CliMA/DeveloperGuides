@@ -89,7 +89,7 @@ When a feature is deprecated or removed, follow the full cleanup protocol:
 1. **Source removal**: delete implementation code, structs, and methods.
 2. **Configuration purge**: remove options from config files and parsers. Ensure that choosing a removed option triggers a clear `error` listing valid alternatives.
 3. **Test suite cleanup**: delete targeted tests; update integration tests to use supported alternatives. Mirror changes between `src/` and `test/`.
-4. **Dependency slimming**: remove packages that were exclusively used by the removed feature from `Project.toml`. See [Dependency Management Guide](dependency_management.md).
+4. **Dependency slimming**: remove packages that were exclusively used by the removed feature from `Project.toml`. See [Dependency Management Guide](../architecture/dependency_management.md).
 5. **Documentation update**: update docstrings and docs to reflect the removal.
 
 ## Self-correction

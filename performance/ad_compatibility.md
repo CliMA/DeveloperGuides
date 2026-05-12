@@ -6,10 +6,10 @@ This guide covers patterns for writing Julia code that is compatible with Automa
 
 | Rule | Rationale |
 |:---|:---|
-| Duck-type functions ([SDP 14](software_design_patterns.md)) | Dual numbers flow through without type annotation barriers |
-| `FT = typeof(x)` or `eltype(x)` ([SDP 15](software_design_patterns.md)) | Lets AD supply the numeric type |
-| `zero(x)` / `one(x)` ([SDP 16](software_design_patterns.md)) | Type-agnostic; correct for Dual numbers |
-| `ifelse` not `if-else` on floating-point values ([SDP 17](software_design_patterns.md)) | Both branches needed for gradient computation; avoids non-differentiable kinks |
+| Duck-type functions ([SDP 14](../architecture/software_design_patterns.md)) | Dual numbers flow through without type annotation barriers |
+| `FT = typeof(x)` or `eltype(x)` ([SDP 15](../architecture/software_design_patterns.md)) | Lets AD supply the numeric type |
+| `zero(x)` / `one(x)` ([SDP 16](../architecture/software_design_patterns.md)) | Type-agnostic; correct for Dual numbers |
+| `ifelse` not `if-else` on floating-point values ([SDP 17](../architecture/software_design_patterns.md)) | Both branches needed for gradient computation; avoids non-differentiable kinks |
 | `@inline` every kernel function | Required for kernel fusion; transparent to AD |
 | No mutation of scalar locals inside kernel | Enzyme and ForwardDiff prefer pure functional code |
 

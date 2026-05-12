@@ -1,6 +1,6 @@
 # Architectural Boundaries
 
-This guide defines the layered architecture used across CliMA model repositories and the rules that keep boundaries clean. Each repo's `*_specific.md` (linked from [AGENTS.md](../../AGENTS.md)) maps these layers to its concrete directories.
+This guide defines the layered architecture used across CliMA model repositories and the rules that keep boundaries clean. Each repo's `*_specific.md` (linked from [AGENTS.md](../AGENTS.md)) maps these layers to its concrete directories.
 
 ## 1. Layer diagram
 

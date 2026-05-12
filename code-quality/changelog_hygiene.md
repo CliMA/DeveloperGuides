@@ -26,7 +26,7 @@ During development, group entries under a `main` section at the top of `NEWS.md`
 
 When a new version is tagged, rename the `main` section to the version number with a `-------` underline, then add a new empty `main` section above it. The `main` section must always exist at the top of `NEWS.md` after a release cut, even if it has no entries yet — subsequent PRs append to it. Entries under a version are final and should not be modified after release.
 
-Note: cutting a release is a maintainer action. Agents should add entries under `main`, not rename `main` to a version. See [agent_autonomy.md](agent_autonomy.md).
+Note: cutting a release is a maintainer action. Agents should add entries under `main`, not rename `main` to a version. See [agent_autonomy.md](../workflow/agent_autonomy.md).
 
 ### Badges
 

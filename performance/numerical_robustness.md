@@ -37,7 +37,7 @@ result = log(safe_x)
 result = sqrt(safe_x)
 ```
 
-When used inside `ifelse`, the guard must be applied **before** the `ifelse` call because both branches are always evaluated. See [SDP 17](software_design_patterns.md) and [GPU Performance Guide](gpu_performance.md).
+When used inside `ifelse`, the guard must be applied **before** the `ifelse` call because both branches are always evaluated. See [SDP 17](../architecture/software_design_patterns.md) and [GPU Performance Guide](gpu_performance.md).
 
 ## 3. AD-compatible clamping
 
@@ -55,7 +55,7 @@ Mass, energy, and tracer conservation are verified at integration scale, not in 
 
 ## 5. Avoid `@assert` for runtime checks inside kernels
 
-Use `error("message")` instead of `@assert`. Do not capture runtime variables in the error message. See [SDP 11](software_design_patterns.md).
+Use `error("message")` instead of `@assert`. Do not capture runtime variables in the error message. See [SDP 11](../architecture/software_design_patterns.md).
 
 ```julia
 # ❌ @assert allocates; string interpolation triggers dynamic dispatch

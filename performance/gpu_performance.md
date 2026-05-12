@@ -9,7 +9,7 @@ The rules below apply whenever the surrounding code is a *kernel* or runs inside
 - **Kernel**: the right-hand side of a `@.` broadcast, the body of a `ClimaCore.lazy()` expression, the closure passed to `Operators.column_integral_*`, `Operators.column_reduce!`, or `Fields.bycolumn`, and any function transitively `@inline`d into one of the above.
 - **Hot path**: any function called once per timestep (or once per Runge–Kutta stage) for every column or every grid point. Concretely: tendency functions in `prognostic_equations/`, the entries of `parameterized_tendencies/`, the `set_*_precomputed_quantities!` family in `cache/`, the Jacobian-update functions, and any `@.` broadcast they execute.
 
-If a function is called in either context, treat every rule in this file and in [software_design_patterns.md](software_design_patterns.md) as binding.
+If a function is called in either context, treat every rule in this file and in [software_design_patterns.md](../architecture/software_design_patterns.md) as binding.
 
 ## 1. SIMT and thread divergence
 
@@ -17,7 +17,7 @@ On GPU architectures (CUDA, ROCm), threads are grouped into warps (typically 32 
 
 ### The remedy: `ifelse`
 
-Use `ifelse(cond, a, b)` to compute both branches and select the result branchlessly. See [SDP 17](software_design_patterns.md) for the full pattern.
+Use `ifelse(cond, a, b)` to compute both branches and select the result branchlessly. See [SDP 17](../architecture/software_design_patterns.md) for the full pattern.
 
 **Critical pitfalls of `ifelse`**:
 
@@ -43,7 +43,7 @@ result = ifelse(x > zero(x), log_term, zero(x))
 
 ## 2. Functors over closures
 
-Closures that capture local variables produce heap allocations ("boxed variables") and may trigger `InvalidIRError: unsupported dynamic function invocation` on GPU. Replace them with callable structs (functors). See [SDP 18](software_design_patterns.md).
+Closures that capture local variables produce heap allocations ("boxed variables") and may trigger `InvalidIRError: unsupported dynamic function invocation` on GPU. Replace them with callable structs (functors). See [SDP 18](../architecture/software_design_patterns.md).
 
 Performance comparison (microphysics case study):
 
@@ -112,7 +112,7 @@ Use `$expr` to prevent the `@.` macro from broadcasting over a subexpression. Th
 
 ### Do not use `Ref()` as a broadcast scalar escape
 
-`Ref()` is not the standard broadcast-escape pattern in this codebase. Its use in `src/` is limited to mutable scalar boxes in callbacks and non-broadcast contexts. Prefer parameter extraction ([SDP 20](software_design_patterns.md)).
+`Ref()` is not the standard broadcast-escape pattern in this codebase. Its use in `src/` is limited to mutable scalar boxes in callbacks and non-broadcast contexts. Prefer parameter extraction ([SDP 20](../architecture/software_design_patterns.md)).
 
 ### Parameter extraction
 
@@ -131,11 +131,11 @@ Large functions (roughly > 200–300 lines) may exceed the Julia compiler's inli
 
 ## 6. Fixed iteration solvers (advisory)
 
-Convergence-based loops (`while err > tol`) cause thread divergence when different threads converge at different rates. Where the physics allows it, prefer a fixed number of iterations. See [SDP 19](software_design_patterns.md).
+Convergence-based loops (`while err > tol`) cause thread divergence when different threads converge at different rates. Where the physics allows it, prefer a fixed number of iterations. See [SDP 19](../architecture/software_design_patterns.md).
 
 ## 7. GPU-safe error handling
 
-- Use `error("message")`, not `@assert`. See [SDP 11](software_design_patterns.md).
+- Use `error("message")`, not `@assert`. See [SDP 11](../architecture/software_design_patterns.md).
 - Do not interpolate runtime variables into error strings inside kernels. The string interpolation allocates and may trigger dynamic dispatch.
 
 ```julia

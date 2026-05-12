@@ -1,6 +1,6 @@
 # Navigating a CliMA repository
 
-This file describes how to orient yourself in any CliMA Julia package. For the concrete directory tree of this specific repository, see the repo-specific guide (linked from [AGENTS.md](../../AGENTS.md)).
+This file describes how to orient yourself in any CliMA Julia package. For the concrete directory tree of this specific repository, see the repo-specific guide (linked from [AGENTS.md](../AGENTS.md)).
 
 ## Where to start
 
