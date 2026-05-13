@@ -58,7 +58,7 @@ using JuliaFormatter
 format(".")
 ```
 
-CI pins a specific JuliaFormatter major version; check `.github/workflows/JuliaFormatter.yml` (or equivalent) in the repo and install the matching version into your base environment to avoid CI-only formatting diffs. See [code_style.md](../code-quality/code_style.md) and [ci_triage.md §10](ci_triage.md).
+CI pins a specific JuliaFormatter major version; check the JuliaFormatter workflow file under `.github/workflows/` (named `JuliaFormatter.yml` in some repos, `julia_formatter.yml` in others) and install the matching version into your base environment to avoid CI-only formatting diffs. See [code_style.md](../code-quality/code_style.md) and [ci_triage.md §10](ci_triage.md).
 
 A pre-commit hook that runs `format(".")` is a cheap way to never see a formatter-only CI failure — JuliaFormatter ships [pre-commit instructions](https://domluna.github.io/JuliaFormatter.jl/stable/integrations/#pre-commit).
 

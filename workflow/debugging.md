@@ -7,7 +7,7 @@ Practical recipes for chasing wrong values, NaNs, and dispatch surprises in CliM
 A simulation that starts cleanly and crashes a few hundred steps in is usually a numerical-stability issue, not a logic bug. The standard workflow:
 
 1. **Find the failing step.** Run the simulation once with the failing config and note the step number where the NaN or domain error appears.
-2. **Reproduce up to just before the crash.** Start an interactive simulation and advance it with `SciMLBase.step!(integrator)` (or the repo's equivalent) until one step before the failure.
+2. **Reproduce up to just before the crash.** Start an interactive simulation and advance it one step at a time until one step before the failure. CliMA model repos drive [`ClimaTimeSteppers`](https://github.com/CliMA/ClimaTimeSteppers.jl), so the call is `CTS.step!(integrator)` (with `import ClimaTimeSteppers as CTS`).
 3. **Inspect the state.** Look at `Y`, `Yₜ`, and `p.precomputed` fields for: NaNs, negative values where positivity is required (e.g. specific humidity, density, water content), zeros where a quantity must be nonzero, and extreme magnitudes that suggest a runaway feedback.
 
 ```julia
@@ -81,13 +81,14 @@ field_sfc = CC.Fields.level(field_3d, 1)     # bottom level
 fieldheatmap!(ax, field_sfc)
 ```
 
-For Oceananigans state inspection, see the [Oceananigans plotting docs](https://clima.github.io/OceananigansDocumentation/stable/literated/tilted_bottom_boundary_layer/#Visualize-the-results) and the [ClimaCoupler debugging guide](https://clima.github.io/ClimaCoupler.jl/dev/debugging/).
+For Oceananigans state inspection, the [ClimaCoupler debugging guide](https://clima.github.io/ClimaCoupler.jl/dev/debugging/) has a "Plotting Oceananigans fields" section that covers 2D fields (`OC.interior()`), 3D fields (surface-level indexing), and `AbstractOperation` fields.
 
 ## 5. Common patterns that produce silently-wrong values
 
 | Symptom                                          | Likely cause                                                         |
 |:-------------------------------------------------|:---------------------------------------------------------------------|
-| A field is zero where it should be updated      | The tendency function reads from `Yₜ` instead of writing to it, or the writer was never wired into the integrator |
+| A field is zero where it should be updated      | The writer was never wired into the integrator (the tendency function exists but no caller assigns into `Yₜ.<field>`) |
+| A field carries stale values across stages       | A tendency function reads from `Yₜ` instead of writing to it — `Yₜ` must be write-only per [ecosystem_conventions.md §2](../architecture/ecosystem_conventions.md) |
 | Result differs by `~eps` from a reference        | Reordered floating-point arithmetic from a refactor — usually harmless, but flag with `🤖precisionΔ` ([changelogs_and_versions.md §1.4](../code-quality/changelogs_and_versions.md)) |
 | Float32 simulation diverges where Float64 is fine | A `1.0`/`Inf`/`6^x` literal promoted to Float64 — see [type_stability.md §1](../performance/type_stability.md) |
 | NaN appears only on GPU                          | A scalar-indexing fallback that returns garbage, or a non-`isbits` arg in a kernel — see [gpu_performance.md §§7–8](../performance/gpu_performance.md) |
