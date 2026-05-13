@@ -17,16 +17,18 @@ On GPU architectures (CUDA, ROCm), threads are grouped into warps (typically 32 
 
 ### The remedy: `ifelse`
 
-Use `ifelse(cond, a, b)` to compute both branches and select the result branchlessly. See [SDP 17](../architecture/software_design_patterns.md) for the full pattern.
+Use `ifelse(cond, a, b)` to remove the divergent branch predicate. See [SDP 17](../architecture/software_design_patterns.md) for the canonical pattern.
 
-**Critical pitfalls of `ifelse`**:
+**Underlying principle**: `ifelse` is an ordinary function call. Both `a` and `b` are evaluated to a value *on every thread* before the call; `ifelse` only selects which value to return. Using `ifelse` does **not** save the work of the un-taken branch — its purpose is to eliminate the warp-divergent predicate, not to skip computation. If one branch is significantly more expensive than the other, every thread still pays its cost; sometimes a divergent `if/else` is the better trade and you should measure.
 
-- Both arguments are always evaluated. Guard mathematically invalid operations (`log`, `sqrt`, division) with `max(x, eps(eltype(x)))` **before** passing them as arguments.
-- Never use `begin...end` blocks inside `ifelse` arguments — side effects and complex blocks execute unconditionally.
-- Do not use `ifelse` to select between a base case and a recursive call. Since both branches evaluate, this causes infinite recursion. Use a standard `if` statement for recursion.
+Three consequences follow:
+
+- **Guard mathematically invalid operations** (`log` of a non-positive, `sqrt` of a negative, division by a possibly-zero denominator) *before* the `ifelse`. See [Numerical Robustness §1–2](numerical_robustness.md) for how to choose the floor (it is not `eps(FT)` in general).
+- **No `begin...end` blocks in arguments.** Statements inside `begin...end` run unconditionally — they are not "guarded" by the condition.
+- **No recursion through `ifelse`.** Since both branches evaluate, using `ifelse` to choose between a base case and a recursive call produces unbounded recursion. Use a plain `if` for recursion.
 
 ```julia
-# ❌ Pitfall: log(x) executes even when x ≤ 0; begin blocks always run
+# ❌ Bad: log(x) executes even when x ≤ 0; the begin-block runs unconditionally
 result = ifelse(x > 0,
     begin
         y = log(x)  # NaN when x ≤ 0
@@ -35,7 +37,9 @@ result = ifelse(x > 0,
     zero(x)
 )
 
-# ✅ Pre-compute safely, select with ifelse
+# ✅ Preferred: pre-compute safely, then select. The wrong log_term for x ≤ 0
+# is discarded by the ifelse, so max(x, eps) is acceptable here even though
+# it would not be a safe NaN-guard on its own (see Numerical Robustness §1).
 safe_x = max(x, eps(eltype(x)))
 log_term = log(safe_x) + one(x)
 result = ifelse(x > zero(x), log_term, zero(x))

@@ -213,7 +213,9 @@ acc = zero(x)
 
 On SIMT architectures, threads in a warp execute in lockstep. A data-dependent `if/else` serializes the two branches across threads (warp divergence). Use `ifelse(cond, a, b)` to compute branchlessly.
 
-**Critical**: both arguments to `ifelse` are always evaluated. Guard mathematically invalid operations (`log`, `sqrt`, division) with `max(x, eps(eltype(x)))` *before* passing them as arguments — never inside a `begin...end` block inside `ifelse`.
+Note that `ifelse` does not skip the un-taken branch's work: every thread evaluates both `a` and `b` and the result of one is then selected. The benefit is removing the divergent branch predicate, not reducing computation; an expensive branch is paid on every thread regardless.
+
+**Critical**: both arguments to `ifelse` are always evaluated. Guard mathematically invalid operations (`log`, `sqrt`, division) *before* passing them as arguments — never inside a `begin...end` block inside `ifelse`. See [Numerical Robustness §1–2](../performance/numerical_robustness.md) for choosing the right floor (it is not `eps(FT)` in general).
 
 Bad:
 
