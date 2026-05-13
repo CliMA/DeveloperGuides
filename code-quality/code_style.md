@@ -96,15 +96,52 @@ When a feature is deprecated or removed, follow the full cleanup protocol:
 
 ## 6. Naming and Syntax conventions
 
-- **Unicode**: Limit use of Unicode. Avoid accents (dot, hat, vec) that create visually ambiguous characters. Use only standard Greek letters (e.g. `α`, `β`, `Δ`) and common math symbols (`∇`, `∂`, `∫`).
-- **Capitalization**: Modules and structs should use `TitleCase`.
-- **Functions**: Function names should be lowercase with words separated by underscores.
-- **Variables**: Follow the conventions in the [Variable List](variable_list.md). Avoid 1-character names like `l` (lowercase el), `O` (uppercase oh), or `I` (uppercase eye).
-- **Line length**: The JuliaFormatter margin is the authoritative line-length limit. Most repos use `margin = 92`; check the repo's `.JuliaFormatter.toml`.
-- **Imports**: Group `using`/`import` statements in the following order, separated by blank lines:
-  1. Standard library imports
-  2. Related third-party imports
-  3. Local/application-specific imports
+### Capitalization
+
+- Modules, structs, and types use `TitleCase`.
+- Functions and variables use `snake_case` (lowercase, words separated by underscores).
+- Constants use `SCREAMING_SNAKE_CASE`.
+- Functions that mutate one of their arguments (conventionally the first) end in `!` — e.g. `update!`, `compute_tendency!`.
+
+### Function names
+
+- **Prefer full words over abbreviations.** `compute_strain_rate_full!` is better than `csrf!`. A few extra characters at the definition site are a vanishingly small cost compared to the cost of decoding an unfamiliar abbreviation every time a reader encounters it.
+- **Acceptable abbreviations** are universally-understood physics/math symbols (`Φ`, `ρ`, `χ`, `θ`) and well-established acronyms used widely in the relevant subfield (`EDMF`, `RRTMGP`, `SGS`, `PDF`, `LES`). When in doubt, spell it out.
+- **Lazy field prefixes (ClimaCore-based repos):** functions that return a lazy cell-center–valued field are prefixed with `ᶜ`; those that return a lazy cell-face–valued field are prefixed with `ᶠ`. Unprefixed functions are understood to be pointwise. For example, `ᶜρ` is a lazy field at cell centers; `ρ` (no prefix) is a pointwise scalar.
+
+### Type names
+
+- **Abstract types: use the bare concept name, not an `Abstract`-prefixed form.** Prefer `CloudModel`, `SpongeModel`, `JacobianAlgorithm` over `AbstractCloudModel`, `AbstractSpongeModel`, `AbstractJacobianAlgorithm`. The concept name reads more naturally in dispatch signatures (`f(x::CloudModel)`) and in documentation. Some legacy code uses `AbstractFoo`; keep it consistent within an existing module, but new hierarchies should drop the prefix.
+- **Common suffixes** signal what kind of type a struct is. Use them to make intent obvious at the call site:
+  - `…Model`: dispatch tag for a parameterization choice (e.g. `SmagorinskyLilly`, `EDMFModel`).
+  - `…Method` / `…Algorithm`: algorithmic choice (e.g. `JacobianAlgorithm`, `TracerNonnegativityMethod`).
+  - `…Parameters` or `…Params`: immutable bag of numerical parameters (e.g. `ThermodynamicsParameters`).
+  - `…Cache`: mutable workspace or precomputed state (e.g. `AtmosCache`).
+- **Avoid generic `…Type` or `…Helper` suffixes** — they don't tell the reader what kind of thing they are looking at.
+
+### Variables
+
+- Follow the conventions in the [Variable List](variable_list.md).
+- Avoid one-character names like `l` (lowercase el), `O` (uppercase oh), or `I` (uppercase eye) — they are visually ambiguous.
+- One-letter names from physics/math (`T`, `ρ`, `χ`, `Φ`) are fine when they match standard notation in the surrounding code.
+
+### Unicode
+
+- Limit use of Unicode. Avoid combining accents (dot, hat, vec) that create visually ambiguous characters.
+- Use only standard Greek letters (`α`, `β`, `Δ`, `χ`, `ρ`, …) and common math symbols (`∇`, `∂`, `∫`, `≤`).
+- Exception: the modifier-letter prefixes `ᶜ` and `ᶠ` are idiomatic in ClimaCore-based repos for lazy center/face field functions (see "Function names" above). They are visually distinct and unambiguous.
+
+### Line length
+
+The JuliaFormatter margin is the authoritative line-length limit. Most repos use `margin = 92`; check the repo's `.JuliaFormatter.toml`.
+
+### Imports
+
+Group `using`/`import` statements in the following order, separated by blank lines:
+
+1. Standard library imports.
+2. Related third-party imports.
+3. Local/application-specific imports.
 
 ## Self-correction
 
