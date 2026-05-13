@@ -10,6 +10,17 @@ The root `.JuliaFormatter.toml` is the authoritative source of truth for code fo
 julia -e 'using JuliaFormatter; format(".")'
 ```
 
+or install JuliaFormatter as an app and use directly from the command-line:
+```julia-repl
+julia> import Pkg; Pkg.Apps.add("JuliaFormatter")
+```
+and add `~/.julia/bin/` to your PATH.
+
+Then you can run the formatter directly:
+```bash
+jlfmt -i .
+```
+
 ### Version consistency
 
 Match the JuliaFormatter version used in CI to prevent unnecessary diff churn. Repos use the `julia-actions/julia-format` GitHub Action and pin a JuliaFormatter major version via the `version:` input:
