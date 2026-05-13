@@ -11,28 +11,35 @@ Shared engineering standards, architectural patterns, and development guidelines
 
 ### Usage
 
-DeveloperGuides is included as a **Git submodule** in CliMA repositories at the standardized path `docs/dev-guides/`:
+DeveloperGuides is included as a **Git subtree** in CliMA repositories at the standardized path `docs/dev-guides/`. To add the subtree to a new consumer repo:
 
 ```bash
-git submodule add https://github.com/CliMA/DeveloperGuides.git docs/dev-guides
+git subtree add --prefix docs/dev-guides \
+    https://github.com/CliMA/DeveloperGuides.git main --squash
 ```
 
 The consuming repo keeps its own `AGENTS.md` at the root, which references:
 
 1. `docs/dev-guides/AGENTS.md` — the shared guide index
-2. A repo-specific guide (e.g., `docs/agents/clima_atmos_specific.md`)
+2. A repo-specific guide (e.g., `docs/clima_atmos_specific.md`)
 
-See [`templates/`](templates/) for ready-to-copy starter files for both.
+See [`templates/`](templates/) for ready-to-copy starter files: an `AGENTS.md` skeleton, a repo-specific guide skeleton, and a GitHub Actions workflow (`update_dev_guides.yml.template`) that automates the weekly subtree sync.
 
 ### Updating
 
-Consumer repos track `main`. To pull the latest guides:
+Consumer repos track `main`. To pull the latest guides manually:
 
 ```bash
-git submodule update --remote docs/dev-guides
-git add docs/dev-guides
-git commit -m "chore: update DeveloperGuides submodule"
+git subtree pull --prefix docs/dev-guides \
+    https://github.com/CliMA/DeveloperGuides.git main --squash \
+    -m "chore: sync dev guides from central repo"
 ```
+
+Most consumer repos automate this with a scheduled GitHub Action (`.github/workflows/update_dev_guides.yml`) that runs the subtree pull weekly and opens a PR if there are changes. See [ClimaAtmos.jl PR #4482](https://github.com/CliMA/ClimaAtmos.jl/pull/4482) for the reference setup.
+
+### Contributing back
+
+Edits to shared guidelines belong here, not in the vendored copy inside a consumer repo. Open PRs against `CliMA/DeveloperGuides`; once merged, the next subtree pull propagates them to every consumer.
 
 ### 🏗️ **Architecture**
 
