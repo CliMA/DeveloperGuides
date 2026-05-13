@@ -46,7 +46,55 @@ Both are accepted by `Pkg.test()`; match whichever convention the repo already u
 
 **Why**: dev tools in root `[deps]` cause `Aqua.test_stale_deps` to fail (if unused by `src/`) and inflate the dependency footprint for every downstream consumer.
 
-## 3. Cross-package local development
+## 3. Package extensions
+
+Julia 1.9+ supports *package extensions*: optional code paths in a package that only load when a specific dependency is also loaded by the user. This lets a package offer integrations (plotting, GPU, file formats) without forcing every downstream consumer to install the heavy dep.
+
+A weak dependency lives in `[weakdeps]` and is paired with an entry in `[extensions]` that names the extension module and lists which weak deps trigger it:
+
+```toml
+[deps]
+SomeCoreDep = "..."
+
+[weakdeps]
+CUDA  = "052768ef-5323-5732-b1bb-66c8b64840ba"
+Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
+
+[extensions]
+MyPackageCUDAExt  = ["CUDA"]
+MyPackagePlotsExt = ["Plots"]
+
+[compat]
+SomeCoreDep = "1"
+CUDA  = "5"
+Plots = "1"
+julia = "1.10"
+```
+
+The extension code lives under `ext/`:
+
+- `ext/MyPackageCUDAExt.jl` — module that uses `CUDA` and extends methods defined in the parent package.
+- `ext/MyPackagePlotsExt.jl` — module that uses `Plots`.
+
+Each extension module is a regular Julia module: it can `using` the parent package and the weak dep, define new methods on the parent's functions, and refer to types from either.
+
+### When to use `ext/` vs `src/`
+
+Choose `ext/` when:
+
+- The integration would otherwise force every consumer of the parent package to install a large, optional dep (CUDA, plotting backends, file-format readers).
+- The functionality only makes sense when the weak dep is already loaded — for example, GPU-specific code paths or plotting helpers.
+
+Keep code in `src/` when:
+
+- The dep is small and used by the package's core path.
+- The dep is required for any meaningful use of the package.
+
+### Compat for weak deps
+
+`[weakdeps]` entries still need `[compat]` entries — without them, `Pkg` cannot resolve a working version, and Aqua's compat check will flag the missing bound. The rules from [§2 Compat bounds](#2-compat-bounds) apply unchanged.
+
+## 4. Cross-package local development
 
 When developing across multiple local packages where the local branch version is higher than the current compat allows:
 
@@ -77,7 +125,7 @@ In nested environments (like `test/Project.toml`), running tests from the parent
 julia --project=. -e 'using Pkg; Pkg.instantiate(); include("test/runtests.jl")'
 ```
 
-## 4. Pruning obsolete packages
+## 5. Pruning obsolete packages
 
 When a feature is removed, check whether it was the exclusive consumer of any external package:
 
@@ -95,7 +143,7 @@ After removing a dependency, verify the package still precompiles:
 julia --project -e 'using PackageName'
 ```
 
-## 5. Avoiding internal modules from dependencies
+## 6. Avoiding internal modules from dependencies
 
 Prefer standard Julia operations over internal modules from dependencies (for example, `ClimaCore.RecursiveApply`). Internal modules may be refactored or removed in future versions. This applies to downstream consumers; within ClimaCore itself, `RecursiveApply` is part of the internal API.
 
@@ -105,7 +153,7 @@ Prefer standard Julia operations over internal modules from dependencies (for ex
 | `a ⊞ b` | `a + b` |
 | `a ⊠ b` | `a * b` |
 
-## 6. Resolving a stuck environment
+## 7. Resolving a stuck environment
 
 CliMA packages depend on a large graph of internal and external packages, and `Pkg` occasionally fails to find a satisfiable version set — especially after a downstream change to `[compat]`. The cheapest-to-most-expensive recovery sequence:
 
@@ -135,7 +183,7 @@ When working in a subdirectory environment (`docs/`, `test/`, `perf/`, `.buildki
 
 Best practice when *writing* `[compat]` entries: keep them as broad as the package's API actually supports. Overly narrow upper bounds in upstream packages are the most common source of unresolvable graphs across the ecosystem. Tighten a bound only when you can name the specific incompatibility (a removed symbol, a changed signature, a regression).
 
-## 7. Licensing
+## 8. Licensing
 
 All CliMA repositories must include:
 - A `LICENSE` file (Apache License 2.0) in the repository root.
