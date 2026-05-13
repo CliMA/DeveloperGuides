@@ -83,6 +83,9 @@ These all live in your *base* environment, not the project's:
 - **[BenchmarkTools.jl](https://github.com/JuliaCI/BenchmarkTools.jl)** — `@benchmark` for measuring time and allocations of hot-path code. See [allocation_debugging.md §5](../performance/allocation_debugging.md).
 - **[LiveServer.jl](https://github.com/JuliaDocs/LiveServer.jl)** — `servedocs()` builds the docs site locally and auto-reloads on file changes.
 - **[About.jl](https://github.com/tecosaur/About.jl)** — `about(x)` summarizes any value's type, memory layout, and methods.
+- **[OhMyREPL.jl](https://github.com/KristofferC/OhMyREPL.jl)** - provides syntax highlighting within the REPL
+  - Add `using OhMyREPL` to `~/.julia/config/startup.jl` to ensure it loads with every REPL session.
+- **[Kaimon.jl](https://github.com/kahliburke/Kaimon.jl)** - provides AI agents with direct access to the Julia REPL, with your standard tools like `Revise` and `Infiltrator` for quick iteration and debugging
 
 ## 7. Knowing where to look
 
