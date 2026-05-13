@@ -8,14 +8,13 @@ When targeting GPUs (which typically use `Float32`) or working within strict inf
 
 Common sources and fixes:
 
-| Source | ❌ Bad | ✅ Good |
-|:---|:---|:---|
-| Integer-base exponentiation | `6^x` (promotes to Float64) | `FT(6)^x` |
-| Float literal | `x + 1.2` (1.2 is Float64) | `x + FT(1.2)` |
-| Infinity / NaN | `Inf`, `NaN` | `typemax(FT)`, `FT(NaN)` |
-| Random numbers | `rand()` | `rand(FT)` |
-| Math constants | `π` in hot path | `FT(π)` |
-| Literal zero/one | `0.0`, `1.0` | `zero(FT)`, `one(FT)` |
+| Source             | ❌ Bad                         | ✅ Good                                         |
+|:-------------------|:-------------------------------|:------------------------------------------------|
+| Float literal      | `x + 1.2` (`1.2` is `Float64`) | `x + FT(1.2)`                                   |
+| Infinity / NaN     | `Inf`, `NaN`                   | `FT(Inf)`, `FT(NaN)`                            |
+| Random numbers     | `rand()`                       | `rand(FT)`                                      |
+| Math constants     | `2 * π` converts to `Float64`  | `2 * FT(π)` (`x * π` is sufficient if `x::FT`)  |
+| Literal zero/one   | `0.0`, `1.0`                   | `zero(FT)`, `one(FT)`                           |
 
 ## 2. Detecting type instability
 
