@@ -1,6 +1,6 @@
 # Drop this file into a consumer repo at `.github/workflows/update_dev_guides.yml`.
 # It pulls the latest DeveloperGuides into `docs/dev-guides/` via `git subtree`
-# every Monday and opens a PR when there are changes.
+# on the 1st of every month and opens a PR when there are changes.
 #
 # Prerequisites:
 #   - DeveloperGuides has already been added as a subtree at `docs/dev-guides/`:
@@ -13,7 +13,7 @@
 name: Update Dev Guides
 on:
   schedule:
-    - cron: '0 0 * * 1'  # Every Monday at 00:00 UTC
+    - cron: '0 0 1 * *'  # 1st of every month at 00:00 UTC
   workflow_dispatch:
 
 jobs:
