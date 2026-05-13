@@ -60,7 +60,7 @@ Edits to shared guidelines belong here, not in the vendored copy inside a consum
 
 ### 🔧 **Code Quality**
 
-- [**Code Style**](code-quality/code_style.md) — formatting, variable locality, Git workflow, feature removal.
+- [**Code Style**](code-quality/code_style.md) — formatting, variable locality, Git workflow, feature removal, naming conventions.
 - [**Documentation Policy**](code-quality/documentation_policy.md) — docstrings, repository-level docs, minimally viable documentation.
 - [**Changelogs and Versioning**](code-quality/changelogs_and_versions.md) — `NEWS.md` format, SemVer rules, and the release/tagging flow.
 - [**Variable List**](code-quality/variable_list.md) — standardized CliMA variable naming conventions.

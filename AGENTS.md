@@ -23,7 +23,7 @@ In consumer repos, these guides are incorporated as a Git subtree at `docs/dev-g
 
 ## Code Quality
 
-1. [code_style.md](code-quality/code_style.md) — formatting, variable locality, Git workflow, feature removal.
+1. [code_style.md](code-quality/code_style.md) — formatting, variable locality, Git workflow, feature removal, naming conventions.
 2. [documentation_policy.md](code-quality/documentation_policy.md) — docstrings, repository-level docs, minimally viable documentation.
 3. [changelogs_and_versions.md](code-quality/changelogs_and_versions.md) — `NEWS.md` format, SemVer rules, and the release/tagging flow.
 4. [variable_list.md](code-quality/variable_list.md) — standardized CliMA variable naming conventions.
