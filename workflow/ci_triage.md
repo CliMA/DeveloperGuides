@@ -67,6 +67,16 @@ A formatter failure is almost never about your changes: it's that your local Jul
 
 `test_stale_deps` failing usually means a dev tool slipped into root `[deps]`; move it to `test/Project.toml`. `test_piracies` means you defined a method on a type you do not own; either move the method to the package that owns the type or wrap the type in your own struct. See [testing_and_validation.md](../infrastructure/testing_and_validation.md).
 
+## 12. Buildkite shared-depot corruption
+
+Buildkite jobs on shared CliMA clusters use a per-pipeline Julia [depot](https://pkgdocs.julialang.org/dev/depots/#Shared-depots-for-distributed-computing) to amortize precompilation across runs. The depot occasionally becomes corrupted — usually after a Julia version bump or an interrupted precompile — and the symptom is a failure in the *initialization* step, not in your code. Telltale messages:
+
+- `Warning: The call to compilecache failed to create a usable precompiled cache file`
+- `ERROR: LoadError: Failed to precompile <package>`
+- `ERROR: \`Pkg=...\` depends on \`OtherPkg=...\`, but no such entry exists in the manifest`
+
+When you see these on a fresh PR with no manifest changes, the depot is the suspect. Clearing it is a one-line maintainer action; the next pipeline run rebuilds the cache. The procedure is documented in the [CliMA slurm-buildkite wiki](https://github.com/CliMA/slurm-buildkite/wiki/Clearing-Shared-Depots).
+
 ## Self-correction
 
 If this guide is discovered to be stale or missing a pattern, update it.

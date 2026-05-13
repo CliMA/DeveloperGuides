@@ -105,7 +105,37 @@ Prefer standard Julia operations over internal modules from dependencies (for ex
 | `a ⊞ b` | `a + b` |
 | `a ⊠ b` | `a * b` |
 
-## 6. Licensing
+## 6. Resolving a stuck environment
+
+CliMA packages depend on a large graph of internal and external packages, and `Pkg` occasionally fails to find a satisfiable version set — especially after a downstream change to `[compat]`. The cheapest-to-most-expensive recovery sequence:
+
+```julia
+import Pkg
+
+# 1. Make sure the manifest matches Project.toml.
+Pkg.instantiate()
+
+# 2. Re-run the resolver from scratch against the current compat bounds.
+Pkg.resolve()
+
+# 3. Move every direct dependency to its newest compat-allowed version.
+Pkg.update()
+```
+
+If those do not converge, one specific package is usually pinned at a version that no longer fits the rest of the graph. Remove and re-add it so the resolver picks a fresh version:
+
+```julia
+Pkg.rm("OffendingPackage")
+Pkg.add("OffendingPackage")
+```
+
+Two packages can constrain each other in conflicting ways; remove them both at once before re-adding. `Pkg.status()` shows current pins and `Pkg.resolve()` prints the resolver's own diagnostic — read that error before guessing.
+
+When working in a subdirectory environment (`docs/`, `test/`, `perf/`, `.buildkite/`) against a local checkout of the parent package, use `Pkg.develop(path="..")` so the subdirectory picks up unreleased changes. See §1 for the full set of nested environments.
+
+Best practice when *writing* `[compat]` entries: keep them as broad as the package's API actually supports. Overly narrow upper bounds in upstream packages are the most common source of unresolvable graphs across the ecosystem. Tighten a bound only when you can name the specific incompatibility (a removed symbol, a changed signature, a regression).
+
+## 7. Licensing
 
 All CliMA repositories must include:
 - A `LICENSE` file (Apache License 2.0) in the repository root.

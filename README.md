@@ -72,7 +72,9 @@ Edits to shared guidelines belong here, not in the vendored copy inside a consum
 
 ### 🤝 **Workflow**
 
+- [**Onboarding**](workflow/onboarding.md) — install Julia, clone a CliMA repo, set up Revise/Infiltrator/JuliaFormatter, first PR loop.
 - [**Agent Autonomy**](workflow/agent_autonomy.md) — actions that require explicit user approval.
+- [**Debugging**](workflow/debugging.md) — interactive recipes for numerical instabilities, dispatch surprises, and `Field` plotting.
 - [**PR Review**](workflow/review.md) — review instructions and checklist.
 - [**CI Triage**](workflow/ci_triage.md) — checklist for "passes locally, fails on CI" failure modes.
 

@@ -35,9 +35,11 @@ In consumer repos, these guides are incorporated as a Git subtree at `docs/dev-g
 
 ## Workflow
 
-1. [agent_autonomy.md](workflow/agent_autonomy.md) — actions that require explicit user approval.
-2. [review.md](workflow/review.md) — PR review instructions and checklist.
-3. [ci_triage.md](workflow/ci_triage.md) — checklist for "passes locally, fails on CI" failure modes.
+1. [onboarding.md](workflow/onboarding.md) — install Julia, clone a CliMA repo, set up Revise/Infiltrator/JuliaFormatter, first PR loop.
+2. [agent_autonomy.md](workflow/agent_autonomy.md) — actions that require explicit user approval.
+3. [debugging.md](workflow/debugging.md) — interactive debugging recipes: numerical instabilities, dispatch, `Field` plotting.
+4. [review.md](workflow/review.md) — PR review instructions and checklist.
+5. [ci_triage.md](workflow/ci_triage.md) — checklist for "passes locally, fails on CI" failure modes.
 
 ## Self-correction
 
