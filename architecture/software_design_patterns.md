@@ -54,9 +54,11 @@ Exception:
 
 - Strings are acceptable at initialization boundaries (for example, parsing user/config input), but convert to typed structs as early as possible.
 
-## 2. Avoid `using` / `import` inside `src/` submodules
+## 2. Avoid `using` / `import` between submodules of the same package
 
-Inside `src/`, do not add local/module-internal `using` or `import` patterns like this:
+Inside `src/`, do not introduce new `using` or `import` statements that pull names from a *sibling* or *parent* submodule of the same package. This rule does not restrict `using`/`import` of external packages — those are normal Julia idioms.
+
+Bad:
 
 ```julia
 module Foo
@@ -64,14 +66,14 @@ module Foo
 baz() = 1
 
 module Bar
-  using Foo: baz
+  using Foo: baz   # same-package cross-submodule import
   bing() = baz()
 end
 
 end
 ```
 
-Prefer explicit qualification or project-established module patterns.
+Prefer explicit qualification (`Foo.baz()` at the call site) or follow whatever module-wiring convention the package already uses. The goal is to keep include/initialization order auditable and prevent accidental cycles between submodules.
 
 ## 3. Do not use `Symbol`s in broadcasted expressions
 
@@ -136,7 +138,19 @@ For fixed-size data, use stack-friendly/static representations.
 
 ## 11. Do not use `@assert` within kernels
 
-Use `error(...)` instead. Do not capture runtime variables in the error message within kernels.
+Use `error("static message")` instead. Do not capture runtime variables in the error string within a kernel — string interpolation allocates and, on GPU, typically fails to compile because the device runtime lacks the full `print_to_string` machinery.
+
+Bad:
+
+```julia
+@assert x > 0 "x must be positive, got $x"   # @assert may be removed; interpolation allocates
+```
+
+Preferred:
+
+```julia
+x > 0 || error("x must be positive")   # static message, no interpolation
+```
 
 ## 12. Do not use `@views`
 
@@ -148,9 +162,12 @@ Follow project conventions that avoid `@views`.
 
 ## 14. Duck-type physics functions; avoid explicit `where {FT}` on non-constructors
 
-Prefer `function f(x, y)` over `function f(x::FT, y::FT) where {FT}` in tendency and physics functions. The `where {FT}` form binds every annotated argument to the *same* concrete element type, which rejects mixed-AD calls (e.g. `f(Dual(1.0), 2.0)`) and rejects `ClimaCore.Field`s whose `eltype`s differ from each other or from a `Float`. Duck typing lets each argument carry its own type and lets AD flow through naturally.
+This rule is strongest for model-side, tendency, and AD-traversed code: prefer `function f(x, y)` over `function f(x::FT, y::FT) where {FT}`. The `where {FT}` form binds every annotated argument to the *same* concrete element type, which rejects mixed-AD calls (e.g. `f(Dual(1.0), 2.0)`) and rejects `ClimaCore.Field`s whose `eltype`s differ from each other or from a `Float`. Duck typing lets each argument carry its own type and lets AD flow through naturally.
 
-Exception: struct constructors that statically allocate `SVector`/`SMatrix` need `::Type{FT}` to determine the element type at compile time. Some library repos (for example, CloudMicrophysics.jl) use `where {FT}` broadly for internal physics functions to enforce homogeneous numeric types. The duck-typing guidance is strongest for model-side code and functions where AD must differentiate through mixed-type arguments.
+Exceptions:
+
+- **Struct constructors** that statically allocate `SVector`/`SMatrix` need `::Type{FT}` to determine the element type at compile time.
+- **Library internals where homogeneous numeric types are intentional** (for example, CloudMicrophysics.jl, Thermodynamics.jl) may use `where {FT}` broadly. Defer to the package's existing style.
 
 Bad:
 
@@ -337,4 +354,17 @@ end
 
 ## 23. Do not use list comprehensions
 
-Avoid list comprehensions like `[getproperty(dist, p) for p in params]` in hot paths or GPU code, as they explicitly allocate `Array`s on the heap. Use `map` with `SVector` or `Tuple` instead.
+Avoid list comprehensions like `[getproperty(dist, p) for p in params]` in hot paths or GPU code, as they explicitly allocate `Array`s on the heap.
+
+Use `map` over a `Tuple` or `SVector`, which returns a `Tuple` or `SVector` respectively without heap allocation. The rule is about the *input type*: `map` over a `Vector` / `Array` still allocates a new `Array`.
+
+```julia
+# Bad: allocates a Vector
+x = [f(p) for p in params]   # params is a Vector
+
+# Preferred: input is a Tuple → map returns a Tuple, no allocation
+x = map(f, (a, b, c))
+
+# Preferred: input is an SVector → map returns an SVector
+x = map(f, SVector(a, b, c))
+```

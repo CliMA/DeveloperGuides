@@ -4,14 +4,14 @@ This guide covers patterns for writing Julia code that is compatible with Automa
 
 ## Core rules
 
-| Rule | Rationale |
-|:---|:---|
-| Duck-type functions ([SDP 14](../architecture/software_design_patterns.md)) | Dual numbers flow through without type-annotation barriers |
+| Rule                                                                                    | Rationale |
+|:----------------------------------------------------------------------------------------|:----------|
+| Duck-type functions ([SDP 14](../architecture/software_design_patterns.md))             | Dual numbers flow through without type-annotation barriers |
 | `FT = typeof(x)` or `eltype(x)` ([SDP 15](../architecture/software_design_patterns.md)) | Lets AD supply the numeric type |
-| `zero(x)` / `one(x)` ([SDP 16](../architecture/software_design_patterns.md)) | Type-agnostic; correctly typed for `Dual` |
-| `ifelse` not `if-else` on floating-point values ([SDP 17](../architecture/software_design_patterns.md)) | Both branches needed for gradient computation; avoids non-differentiable kinks |
-| `@inline` every kernel function | Required for kernel fusion; transparent to AD |
-| No mutation of scalar locals inside kernel | Enzyme and ForwardDiff prefer pure functional code |
+| `zero(x)` / `one(x)` ([SDP 16](../architecture/software_design_patterns.md))            | Type-agnostic; correctly typed for `Dual` |
+| Prefer `ifelse` to `if/else` ([SDP 17](../architecture/software_design_patterns.md))    | Type-stable, branchless on GPU. |
+| `@inline` every kernel function                                                         | Required for kernel fusion; transparent to AD |
+| Do not write `Dual` values into `Float`-typed buffers                                   | Strips partials under ForwardDiff (`convert(Float, dual)` returns only the primal). |
 
 ## Before / after example
 
