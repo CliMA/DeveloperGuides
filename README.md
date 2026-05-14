@@ -18,12 +18,22 @@ git subtree add --prefix docs/dev-guides \
     https://github.com/CliMA/DeveloperGuides.git main --squash
 ```
 
+> [!NOTE]
+> DeveloperGuides ships its own `AGENTS.md`, `LICENSE`, and `README.md` at the repo root.
+> These will conflict with the consumer repo's own root files during `git subtree add`.
+> Resolve by keeping the consumer repo's versions:
+> ```bash
+> git checkout --ours AGENTS.md LICENSE README.md
+> git add AGENTS.md LICENSE README.md
+> git rebase --continue   # or: GIT_EDITOR=true git rebase --continue
+> ```
+
 The consuming repo keeps its own `AGENTS.md` at the root, which references:
 
 1. `docs/dev-guides/AGENTS.md` — the shared guide index
 2. A repo-specific guide (e.g., `docs/clima_atmos_specific.md`)
 
-See [`templates/`](templates/) for ready-to-copy starter files: an `AGENTS.md` skeleton, a repo-specific guide skeleton, and a GitHub Actions workflow (`update_dev_guides.yml.template`) that automates the weekly subtree sync.
+See [`templates/`](templates/) for ready-to-copy starter files: an `AGENTS.md` skeleton, a repo-specific guide skeleton, and a GitHub Actions workflow (`update_dev_guides.yml.template`) that automates the monthly subtree sync.
 
 ### Updating
 
@@ -35,7 +45,7 @@ git subtree pull --prefix docs/dev-guides \
     -m "chore: sync dev guides from central repo"
 ```
 
-Most consumer repos automate this with a scheduled GitHub Action (`.github/workflows/update_dev_guides.yml`) that runs the subtree pull weekly and opens a PR if there are changes. See [ClimaAtmos.jl PR #4482](https://github.com/CliMA/ClimaAtmos.jl/pull/4482) for the reference setup.
+Most consumer repos automate this with a scheduled GitHub Action (`.github/workflows/update_dev_guides.yml`) that runs the subtree pull monthly and opens a PR if there are changes. See [ClimaAtmos.jl PR #4482](https://github.com/CliMA/ClimaAtmos.jl/pull/4482) for the reference setup.
 
 ### Contributing back
 
