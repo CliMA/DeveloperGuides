@@ -45,7 +45,17 @@ git subtree pull --prefix docs/dev-guides \
     -m "chore: sync dev guides from central repo"
 ```
 
-Most consumer repos automate this with a scheduled GitHub Action (`.github/workflows/update_dev_guides.yml`) that runs the subtree pull monthly and opens a PR if there are changes. See [ClimaAtmos.jl PR #4482](https://github.com/CliMA/ClimaAtmos.jl/pull/4482) for the reference setup.
+> [!NOTE]
+> `git subtree pull` exits with an error when there are no new commits upstream (i.e. nothing
+> to merge). In an automated workflow, append `|| true` so the step does not fail on months
+> with no DeveloperGuides changes:
+> ```bash
+> git subtree pull --prefix docs/dev-guides \
+>     https://github.com/CliMA/DeveloperGuides.git main --squash \
+>     -m "chore: sync dev guides from central repo" || true
+> ```
+
+Most consumer repos automate this with a scheduled GitHub Action (`.github/workflows/update_dev_guides.yml`) that runs the subtree pull monthly and opens a PR when there are changes. See [`templates/`](templates/) for a ready-to-copy workflow file.
 
 ### Contributing back
 
