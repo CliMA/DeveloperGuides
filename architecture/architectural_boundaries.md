@@ -34,7 +34,7 @@ When adding new code, place it in the layer that owns the relevant concern. Do n
 ## 2. Parameter container design
 
 - Containers should be focused on the specific physical or mathematical domain they serve.
-- Do not add "zombie" forward-compatibility fields to support not-yet-refactored callers; refactor the callers instead.
+- Do not add "zombie" forward-compatibility fields to support not-yet-refactored callers; refactor the callers instead. [KMD: what does this mean?]
 - Keep parameter containers focused on physical constants and model parameters. Configuration flags, output options, and diagnostic metadata belong in the model's infrastructure layer, not in physics parameter structs.
 
 ## 3. Avoid hidden field dependencies

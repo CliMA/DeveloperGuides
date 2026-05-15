@@ -95,7 +95,7 @@ version = "0.38.4"
 
 ### 2.2 Bump rules: Julia's modified SemVer
 
-CliMA packages follow [Julia's modified Semantic Versioning](https://pkgdocs.julialang.org/v1/compatibility/) — the same scheme the General registry enforces. The rules differ for pre-1.0 and post-1.0 packages.
+CliMA packages follow [Julia's modified Semantic Versioning](https://pkgdocs.julialang.org/v1/compatibility/) — the same scheme the General registry enforces. The rules differ for pre-1.0 and post-1.0 packages.[KMD: ClimaLand has been taking a looser approach. Many of our releases (indeed, the biweekly release schedule) is driven by the Coupler needing to use the latest upstream packages. In the absence of this, we would not be making releases. Because we frequently merge breaking PRs, we would be on major version 50 or something if we following this SemVer approach to the letter. This is conceptually at odds with what we want: to release version 2 as a calibrated land model with all of our preferred parameterizations (the next paper); TLDR - we are still following the 0.X rules for breaking releases]
 
 | Package state | Bump | Format | Meaning |
 |:--------------|:-----|:-------|:--------|
