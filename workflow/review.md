@@ -128,3 +128,7 @@ Then list residual risks briefly.
 - Restart/reproducibility, conservation, diagnostics, and implicit solver changes are especially sensitive.
 - Allocation benchmarks (typically under `perf/`) are not run in CI; allocation regressions must be caught in review using the `@allocated` pattern.
 - If evidence is insufficient, report a risk or open question; do not invent failures.
+
+## Self-correction
+
+If this guide is discovered to be stale or missing a pattern, update it.

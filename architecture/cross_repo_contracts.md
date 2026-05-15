@@ -34,7 +34,7 @@ Treat anything not in the package's `docs/` as internal and unstable.
 
 - Pass a `SurfaceFluxes.Parameters.SurfaceFluxesParameters` container (the concrete subtype of `AbstractSurfaceFluxesParameters`); do not hard-code flux constants.
 - Surface flux computation is expensive (root-finding on the Monin–Obukhov length); call it once per stage in the infrastructure layer, not inside tendency hot paths.
-- Public entry points include `surface_fluxes` (the bulk solver), `sensible_heat_flux`, `latent_heat_flux`, and `compute_profile_value` (for recovering profile values at a given height). Round-trip tests against these are an idiomatic way to validate flux changes — see [testing_and_validation.md §"Round-trip"](../infrastructure/testing_and_validation.md).
+- Public entry points include `surface_fluxes` (the bulk solver), `sensible_heat_flux`, `latent_heat_flux`, and `compute_profile_value` (for recovering profile values at a given height). Round-trip tests against these are an idiomatic way to validate flux changes — see [testing_and_validation.md §2 Round-trip tests](../infrastructure/testing_and_validation.md#2-round-trip-inverse-tests).
 
 ## ClimaParams.jl
 

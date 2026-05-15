@@ -368,3 +368,7 @@ x = map(f, (a, b, c))
 # Preferred: input is an SVector → map returns an SVector
 x = map(f, SVector(a, b, c))
 ```
+
+## Self-correction
+
+If this guide is discovered to be stale or missing a pattern, update it.
