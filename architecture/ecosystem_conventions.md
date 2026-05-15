@@ -4,7 +4,7 @@ Conventions for reading and writing code that span every CliMA model and library
 
 ## 1. Module aliases used across the ecosystem
 
-When working in a CliMA model repo you will see these aliases repeatedly. Match them in new code so call sites stay grep-able. Do **not** invent a different alias for the same package.
+When working in a CliMA model repo you will see these aliases repeatedly. If you choose to use aliases, match them in new code so call sites stay grep-able. Do **not** invent a different alias for the same package.
 
 | Alias | Package / module                          | Where it dominates |
 |:------|:------------------------------------------|:-------------------|
@@ -35,12 +35,12 @@ Model repos (ClimaAtmos, ClimaLand) follow a common state layout:
 
 - **`Y`** — the prognostic state vector. A `ClimaCore.Fields.FieldVector` whose top-level fields name solution regions (`Y.c` for cell-centered, `Y.f` for face-centered in ClimaAtmos; `Y.soil`, `Y.canopy` in ClimaLand). Anything timestepped lives in `Y`.
 - **`Yₜ`** — the tendency, same shape as `Y`. Tendency functions write into `Yₜ` and never allocate new fields; they read from `Y`.
-- **`p`** — the parameter and cache *bundle* passed to every right-hand-side function. It is not just parameters: it carries pre-allocated scratch (`p.scratch`), precomputed quantities (`p.precomputed`), atmosphere settings (`p.atmos`), and the numeric parameter struct (`p.params`, e.g. `ClimaAtmosParameters`).
-- **`t`** — the current simulation time (in seconds, `FT`).
+- **`p`** — the cache *bundle* passed to every right-hand-side function. In ClimaAtmos, this contains pre-allocated scratch (`p.scratch`), precomputed quantities (`p.precomputed`), atmosphere settings (`p.atmos`), and the numeric parameter struct (`p.params`, e.g. `ClimaAtmosParameters`). In ClimaLand, the cache contains scratch space and physical quantities that may be precomputed once per step or computed multiple times per step; parameters are passed in via the model, however, and not the cache.
+- **`t`** — the current simulation time (in seconds (Float64) or expressed as an `ITime`).
 
 Rules implied by this layout:
 
-1. **Never allocate `Field`s inside a tendency or precomputed-quantity setter.** Every scratch field must already exist in `p.scratch` (allocated once during model construction in `src/cache/`). See the "Materialization" section of [GPU Performance Guide §3](../performance/gpu_performance.md).
+1. **Never allocate `Field`s inside a tendency or precomputed-quantity setter.** To avoid doing so, allocate a scratch field in the cache `p.scratch` (allocated into `p.scratch` once during model construction in `src/cache/` for ClimaAtmos) or use lazy broadcasting. See the "Materialization" section of [GPU Performance Guide §3](../performance/gpu_performance.md).
 2. **`Yₜ` may only be written into, not read from.** Reading `Yₜ` inside a tendency function couples stages of the time integrator and breaks reproducibility.
 3. **`p` must be treated as effectively immutable from the integrator's point of view.** You can write to `p.precomputed` and `p.scratch` *as part of refreshing the cache for the current stage*, but you must not mutate `p` in ways that change behavior on a subsequent call with the same `(Y, t)`.
 
@@ -106,7 +106,7 @@ Rules for agents:
 
 `Diagnostics` is the user-facing name for any quantity written to output (NetCDF, HDF5) at a configurable cadence. Diagnostic *names* and *units* are public API.
 
-- In ClimaAtmos, diagnostics are wired up in `src/diagnostics/` (aliased as `CAD`). Each diagnostic has a short name, long name, units, comments, and a compute function.
+- In ClimaAtmos and ClimaLand, diagnostics are defined in `src/diagnostics/` (aliased as `CAD` for ClimaAtmos). Each diagnostic has a short name, long name, units, comments, and a compute function.
 - Renaming a diagnostic, changing its units, or removing a default diagnostic is a breaking change and requires a `NEWS.md` entry under `![][badge-💥breaking]` (see [changelogs_and_versions.md](../code-quality/changelogs_and_versions.md)).
 - Adding a *new* diagnostic does not require a breaking-change badge, but does need a `NEWS.md` entry under `![][badge-✨feature/enhancement]`.
 
