@@ -41,7 +41,7 @@ Model repos (ClimaAtmos, ClimaLand) follow a common state layout:
 Rules implied by this layout:
 
 1. **Never allocate `Field`s inside a tendency or precomputed-quantity setter.** To avoid doing so, allocate a scratch field in the cache `p.scratch` (allocated into `p.scratch` once during model construction in `src/cache/` for ClimaAtmos) or use lazy broadcasting. See the "Materialization" section of [GPU Performance Guide §3](../performance/gpu_performance.md).
-2. **`Yₜ` may only be written into, not read from.** Reading `Yₜ` inside a tendency function couples stages of the time integrator and breaks reproducibility. [KMD: I am confused by this. many times within the tendency we compute things from Y, is the same the same as reading from Y? For example, recomputing temperature each Newton iteration from Y]
+2. **`Yₜ` may only be written into, not read from.** Reading `Yₜ` inside a tendency function couples stages of the time integrator and breaks reproducibility. [KMD: ClimaLand has some limiters which use the value of Yt to clip Yt]
 3. **`p` must be treated as effectively immutable from the integrator's point of view.** You can write to `p.precomputed` and `p.scratch` *as part of refreshing the cache for the current stage*, but you must not mutate `p` in ways that change behavior on a subsequent call with the same `(Y, t)`.
 
 ## 3. Cell-center vs cell-face notation (`ᶜ` / `ᶠ`)
