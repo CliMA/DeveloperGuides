@@ -179,6 +179,8 @@ If the post-adapt check returns `false`, check for:
 
 When defining a new struct that wraps device-resident arrays, add an `Adapt.adapt_structure(to, x::MyStruct) = MyStruct(adapt(to, x.field1), ...)` method so the post-adapt object becomes `isbits`.
 
+Avoid using `DataTypes` (e.g. `Float64`) or their aliases (e.g `FT`) directly in broadcast kernels. This can cause `isbits` failures on different julia versions.
+
 ## 9. Allocation verification workflow
 
 After implementing or modifying hot-path code, verify zero allocations:

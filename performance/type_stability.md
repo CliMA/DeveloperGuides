@@ -108,8 +108,13 @@ A `BroadcastInferenceError` from `ClimaCore` usually means a function inside a `
 ### Common "false pass" scenario
 
 A unit test may pass with standard inputs but fail in integrated simulations because:
+
 - The test inputs never trigger the code path containing the Float64 literal.
 - Edge-case inputs (zero, negative, very large) expose a hidden `Inf` or `NaN` literal.
+
+## 6. Prefer using base julia general number functions
+
+Use general number functions from Base Julia that are designed to work across numeric types, as they often have optimized methods for different types and can help maintain type stability. Examples include `iszero`, `isfinite`, `isinf`, `isone`, `isodd`, and `isnan`. These functions are more likely to return consistent types across different numeric inputs, reducing the risk of type instability in your code.
 
 ## Self-correction
 
