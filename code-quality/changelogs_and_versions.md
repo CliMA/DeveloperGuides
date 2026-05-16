@@ -121,6 +121,10 @@ A change is *not* breaking just because it shifts bit-level results — performa
 
 Test for breaking-ness: *can a downstream package, pinned to the current compat, keep working without modification?* If the answer is no, bump the breaking slot.
 
+### 2.4 Merging a PR with breaking changes
+
+When merging a PR that contains breaking changes, ensure that the `NEWS.md` entry for the change is properly tagged with `![][badge-💥breaking]`. It is your responsibility to open PRs in downstream repositiories that will be affected when the breaking release is made. Ideally, the PRs in the downstream repositories should be opened before the breaking release is made. They can be tested with the new changes by `dev`ing the branch of the upstream package's repo.
+
 ---
 
 ## Part 3 — Cutting a release
