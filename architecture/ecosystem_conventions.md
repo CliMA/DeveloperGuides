@@ -4,6 +4,8 @@ Conventions for reading and writing code that span every CliMA model and library
 
 ## 1. Module aliases used across the ecosystem
 
+It is generally preferable to use public functions and data structures that are `export`-ed by a package as part of its API, either by `using` the package or by `import`-ing specific symbols from the package. Before a package's API has been finalized, though, it is often easier to use unexported quantities by aliasing the package name and accessing its internals as needed; for example, `import Thermodynamics as TD` allows any quantity from `Thermodynamics.jl` to be accessed succinctly via `TD.<name>`.
+
 When working in a CliMA model repo you will see these aliases repeatedly. If you choose to use aliases, match them in new code so call sites stay grep-able. Do **not** invent a different alias for the same package.
 
 | Alias | Package / module                          | Where it dominates |
@@ -40,9 +42,9 @@ Model repos (ClimaAtmos, ClimaLand) follow a common state layout:
 
 Rules implied by this layout:
 
-1. **Never allocate `Field`s inside a tendency or precomputed-quantity setter.** To avoid doing so, allocate a scratch field in the cache `p.scratch` (allocated into `p.scratch` once during model construction in `src/cache/` for ClimaAtmos) or use lazy broadcasting. See the "Materialization" section of [GPU Performance Guide §3](../performance/gpu_performance.md).
+1. **Never allocate `Field`s inside a tendency or cache setter.** To avoid doing so, use a scratch field from `p.scratch` (allocated during model construction in `src/cache/` for ClimaAtmos), or use lazy broadcasting. See the "Materialization" section of [GPU Performance Guide §3](../performance/gpu_performance.md).
 2. **`Yₜ` may only be written into, not read from.** Reading `Yₜ` inside a tendency function couples stages of the time integrator and breaks reproducibility. [KMD: ClimaLand has some limiters which use the value of Yt to clip Yt]
-3. **`p` must be treated as effectively immutable from the integrator's point of view.** You can write to `p.precomputed` and `p.scratch` *as part of refreshing the cache for the current stage*, but you must not mutate `p` in ways that change behavior on a subsequent call with the same `(Y, t)`.
+3. **`p` must be treated as effectively immutable from the integrator's point of view.** You can write to `p.precomputed` and `p.scratch` *as part of refreshing the cache for the current stage*, but you must not mutate `p` in ways that would result in different behavior on a subsequent call with the same values of `Y` and `t`.
 
 ## 3. Cell-center vs cell-face notation (`ᶜ` / `ᶠ`)
 
@@ -51,9 +53,11 @@ ClimaAtmos uses two Unicode prefixes to distinguish where a field lives on the s
 - `ᶜ` (U+1D9C) — cell-center field. Typed in most editors as a Unicode escape or with `\^c<TAB>`.
 - `ᶠ` (U+1DA0) — cell-face field. Typed as `\^f<TAB>`.
 
-Examples: `ᶜρ`, `ᶠu³`, `ᶜT`, `ᶠw`. These prefixes are part of the variable name, not decoration — `ᶜρ` and `ᶠρ` are different fields living in different `ClimaCore.Spaces.AbstractSpace`s. Operators (`ᶜgradᵥ`, `ᶠinterp`, etc.) follow the same convention: the prefix tells you which space the *result* lives in.
+Examples: `ᶜρ`, `ᶠu³`, `ᶜT`, `ᶠw`. These prefixes are part of the variable name, not decoration — `ᶜρ` and `ᶠρ` are different fields with different `ClimaCore.Spaces.AbstractSpace`s. Operators (`ᶜgradᵥ`, `ᶠinterp`, etc.) follow the same convention: the prefix tells you the space on which the *result* of an operator lives.
 
-When introducing a new field, copy the level prefix from an analogous existing field. Mismatched prefixes are one of the more common causes of `BroadcastInferenceError` on ClimaCore field operations.
+When introducing a new field, copy the level prefix from an analogous existing field. Mismatched center/face spaces are a frequent source of errors when broadcasting over ClimaCore fields, but these errors can be avoided by keeping track of `ᶜ`/`ᶠ` prefixes in variable names.
+
+When accessing a single value from a field, do not add a `ᶜ`/`ᶠ` prefix to its variable name. To avoid confusing scalar quantities with fields, these prefixes should *only* be used when referring to fields.
 
 ## 4. Parameter wiring (`ClimaParams` → physics libraries → model)
 
@@ -65,8 +69,8 @@ TOML files in ClimaParams/src/parameters.toml
         ▼ CP.create_toml_dict(FT)
 toml_dict :: CP.ParamDict
         │
-        ▼ Constructor: ThermodynamicsParameters(toml_dict)
-        ▼              SurfaceFluxesParameters(toml_dict, UF.GryanikParams)
+        │ Constructor: ThermodynamicsParameters(toml_dict)
+        │              SurfaceFluxesParameters(toml_dict, UF.GryanikParams)
         ▼              CMP.TerminalVelocityParams(toml_dict)
 Library-specific parameter struct (immutable, isbits-after-adapt)
         │

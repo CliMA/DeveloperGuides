@@ -145,13 +145,7 @@ julia --project -e 'using PackageName'
 
 ## 6. Avoiding internal modules from dependencies
 
-Prefer standard Julia operations over internal modules from dependencies (for example, `ClimaCore.RecursiveApply`). Internal modules may be refactored or removed in future versions. This applies to downstream consumers; within ClimaCore itself, `RecursiveApply` is part of the internal API.
-
-| ❌ Discouraged (in downstream packages) | ✅ Preferred |
-|:---|:---|
-| `rzero(T)` | `zero(T)` |
-| `a ⊞ b` | `a + b` |
-| `a ⊠ b` | `a * b` |
+Prefer standard Julia operations over internal modules from dependencies. Internal modules may be refactored or removed in future versions, without being marked as breaking changes. Quantities that are not explicitly `export`-ed or documented as part of a package's public API should be considered internals, and other packages should refrain from accessing them if possible.
 
 ## 7. Resolving a stuck environment
 
