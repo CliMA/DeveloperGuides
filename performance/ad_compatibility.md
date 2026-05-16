@@ -6,10 +6,10 @@ This guide covers patterns for writing Julia code that is compatible with Automa
 
 | Rule                                                                                    | Rationale |
 |:----------------------------------------------------------------------------------------|:----------|
-| Duck-type functions ([SDP 14](../architecture/software_design_patterns.md))             | Dual numbers flow through without type-annotation barriers |
-| `FT = typeof(x)` or `eltype(x)` ([SDP 15](../architecture/software_design_patterns.md)) | Lets AD supply the numeric type |
-| `zero(x)` / `one(x)` ([SDP 16](../architecture/software_design_patterns.md))            | Type-agnostic; correctly typed for `Dual` |
-| Prefer `ifelse` to `if/else` ([SDP 17](../architecture/software_design_patterns.md))    | Type-stable, branchless on GPU. |
+| Duck-type functions ([SDP 14](../code-quality/software_design_patterns.md))             | Dual numbers flow through without type-annotation barriers |
+| `FT = typeof(x)` or `eltype(x)` ([SDP 15](../code-quality/software_design_patterns.md)) | Lets AD supply the numeric type |
+| `zero(x)` / `one(x)` ([SDP 16](../code-quality/software_design_patterns.md))            | Type-agnostic; correctly typed for `Dual` |
+| Prefer `ifelse` to `if/else` ([SDP 17](../code-quality/software_design_patterns.md))    | Type-stable, branchless on GPU. |
 | `@inline` every kernel function                                                         | Required for kernel fusion; transparent to AD |
 | Do not write `Dual` values into `Float`-typed buffers                                   | Strips partials under ForwardDiff (`convert(Float, dual)` returns only the primal). |
 
@@ -34,7 +34,7 @@ end
 end
 ```
 
-Note: the `if/else` form is *itself* fine for both ForwardDiff and Enzyme — branches are differentiated separately. The reasons to prefer `ifelse` are (a) GPU thread divergence (see [SDP 17](../architecture/software_design_patterns.md)) and (b) keeping the body small enough to inline cleanly.
+Note: the `if/else` form is *itself* fine for both ForwardDiff and Enzyme — branches are differentiated separately. The reasons to prefer `ifelse` are (a) GPU thread divergence (see [SDP 17](../code-quality/software_design_patterns.md)) and (b) keeping the body small enough to inline cleanly.
 
 ## When type constraints are OK
 

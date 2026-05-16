@@ -9,7 +9,7 @@ In consumer repos, these guides are incorporated as a Git subtree at `docs/dev-g
 1. [repo_structure.md](architecture/repo_structure.md) — how to navigate any CliMA Julia package.
 2. [ecosystem_conventions.md](architecture/ecosystem_conventions.md) — module aliases, `Y`/`Yₜ`/`p` state layout, `ᶜ`/`ᶠ` notation, CI structure, reproducibility, diagnostics.
 3. [architectural_boundaries.md](architecture/architectural_boundaries.md) — layered architecture and boundary rules.
-4. [software_design_patterns.md](architecture/software_design_patterns.md) — numbered SDPs: branchless logic, functors, parameter extraction, etc.
+4. [software_design_patterns.md](code-quality/software_design_patterns.md) — numbered SDPs: branchless logic, functors, parameter extraction, etc.
 5. [cross_repo_contracts.md](architecture/cross_repo_contracts.md) — call-site conventions for ecosystem packages.
 6. [dependency_management.md](architecture/dependency_management.md) — runtime vs dev deps, compat bounds.
 

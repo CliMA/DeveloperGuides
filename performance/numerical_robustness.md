@@ -71,7 +71,7 @@ A few practical notes:
 - `NaN` inputs do not need guarding at this layer: `log(NaN) = sqrt(NaN) = NaN`, propagating silently. The bug producing the `NaN` is upstream.
 - The intent of the clip is to absorb *round-off-level* negative values. If you are routinely clipping inputs whose magnitude is far above round-off, there is an upstream bug and the clip is hiding it.
 
-When `log`/`sqrt`/division appears inside an `ifelse`, the guard goes *before* the `ifelse` because both branches are always evaluated. See [SDP 17](../architecture/software_design_patterns.md) and [GPU Performance Guide §1](gpu_performance.md).
+When `log`/`sqrt`/division appears inside an `ifelse`, the guard goes *before* the `ifelse` because both branches are always evaluated. See [SDP 17](../code-quality/software_design_patterns.md) and [GPU Performance Guide §1](gpu_performance.md).
 
 ## 3. AD-compatible clamping
 
@@ -89,7 +89,7 @@ Mass, energy, and tracer conservation are verified at integration scale, not in 
 
 ## 5. Avoid `@assert` for runtime checks inside kernels
 
-Use `error("message")` instead of `@assert`. Do not capture runtime variables in the error message. See [SDP 11](../architecture/software_design_patterns.md).
+Use `error("message")` instead of `@assert`. Do not capture runtime variables in the error message. See [SDP 11](../code-quality/software_design_patterns.md).
 
 ```julia
 # ❌ @assert allocates; string interpolation triggers dynamic dispatch

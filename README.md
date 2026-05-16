@@ -66,7 +66,7 @@ Edits to shared guidelines belong here, not in the vendored copy inside a consum
 - [**Repo Structure**](architecture/repo_structure.md) — how to navigate any CliMA Julia package.
 - [**Ecosystem Conventions**](architecture/ecosystem_conventions.md) — module aliases, state layout (`Y`/`Yₜ`/`p`), `ᶜ`/`ᶠ` notation, CI, reproducibility, diagnostics.
 - [**Architectural Boundaries**](architecture/architectural_boundaries.md) — layered architecture and boundary rules.
-- [**Software Design Patterns**](architecture/software_design_patterns.md) — numbered SDPs: branchless logic, functors, parameter extraction, etc.
+- [**Software Design Patterns**](code-quality/software_design_patterns.md) — numbered SDPs: branchless logic, functors, parameter extraction, etc.
 - [**Cross-Repo Contracts**](architecture/cross_repo_contracts.md) — call-site conventions for ecosystem packages.
 - [**Dependency Management**](architecture/dependency_management.md) — runtime vs dev deps, compat bounds.
 

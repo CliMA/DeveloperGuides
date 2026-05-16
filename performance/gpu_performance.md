@@ -9,7 +9,7 @@ The rules below apply whenever the surrounding code is a *kernel* or runs inside
 - **Kernel**: the right-hand side of a `@.` broadcast, the body of a `ClimaCore.lazy()` expression, the closure passed to `Operators.column_integral_*`, `Operators.column_reduce!`, or `Fields.bycolumn`, and any function transitively `@inline`d into one of the above.
 - **Hot path**: any function called once per timestep (or once per Runge–Kutta stage) for every column or every grid point. In model repos this includes tendency functions, precomputed-quantity setters, and Jacobian-update functions. In library repos (e.g. Thermodynamics.jl, CloudMicrophysics.jl), it includes any function that is designed to be called from a broadcast kernel.
 
-If a function is called in either context, treat every rule in this file and in [software_design_patterns.md](../architecture/software_design_patterns.md) as binding.
+If a function is called in either context, treat every rule in this file and in [software_design_patterns.md](../code-quality/software_design_patterns.md) as binding.
 
 ## 1. SIMT and thread divergence
 
@@ -17,7 +17,7 @@ On GPU architectures (CUDA, ROCm), threads are grouped into warps (typically 32 
 
 ### The remedy: `ifelse`
 
-Use `ifelse(cond, a, b)` to remove the divergent branch predicate. See [SDP 17](../architecture/software_design_patterns.md) for the canonical pattern.
+Use `ifelse(cond, a, b)` to remove the divergent branch predicate. See [SDP 17](../code-quality/software_design_patterns.md) for the canonical pattern.
 
 **Underlying principle**: `ifelse` is an ordinary function call. Both `a` and `b` are evaluated to a value *on every thread* before the call; `ifelse` only selects which value to return. Using `ifelse` does **not** save the work of the un-taken branch — its purpose is to eliminate the warp-divergent predicate, not to skip computation. If one branch is significantly more expensive than the other, every thread still pays its cost; sometimes a divergent `if/else` is the better trade and you should measure.
 
@@ -47,7 +47,7 @@ result = ifelse(x > zero(x), log_term, zero(x))
 
 ## 2. Functors over closures
 
-Closures that capture local variables produce heap allocations ("boxed variables") and may trigger `InvalidIRError: unsupported dynamic function invocation` on GPU. Replace them with callable structs (functors). See [SDP 18](../architecture/software_design_patterns.md).
+Closures that capture local variables produce heap allocations ("boxed variables") and may trigger `InvalidIRError: unsupported dynamic function invocation` on GPU. Replace them with callable structs (functors). See [SDP 18](../code-quality/software_design_patterns.md).
 
 Performance comparison (microphysics case study):
 
@@ -118,7 +118,7 @@ Use `$expr` to prevent the `@.` macro from broadcasting over a subexpression. Th
 
 ### Do not use `Ref()` as a broadcast scalar escape
 
-`Ref()` is not the standard broadcast-escape pattern in this codebase. Its use in `src/` is limited to mutable scalar boxes in callbacks and non-broadcast contexts. Prefer parameter extraction ([SDP 20](../architecture/software_design_patterns.md)).
+`Ref()` is not the standard broadcast-escape pattern in this codebase. Its use in `src/` is limited to mutable scalar boxes in callbacks and non-broadcast contexts. Prefer parameter extraction ([SDP 20](../code-quality/software_design_patterns.md)).
 
 ### Parameter extraction
 
@@ -137,11 +137,11 @@ Large functions (roughly > 200–300 lines) may exceed the Julia compiler's inli
 
 ## 6. Fixed iteration solvers (advisory)
 
-Convergence-based loops (`while err > tol`) cause thread divergence when different threads converge at different rates. Where the physics allows it, prefer a fixed number of iterations. See [SDP 19](../architecture/software_design_patterns.md).
+Convergence-based loops (`while err > tol`) cause thread divergence when different threads converge at different rates. Where the physics allows it, prefer a fixed number of iterations. See [SDP 19](../code-quality/software_design_patterns.md).
 
 ## 7. GPU-safe error handling
 
-- Use `error("message")`, not `@assert`. See [SDP 11](../architecture/software_design_patterns.md).
+- Use `error("message")`, not `@assert`. See [SDP 11](../code-quality/software_design_patterns.md).
 - Do not interpolate runtime variables into error strings inside kernels. The string interpolation allocates and may trigger dynamic dispatch.
 
 ```julia

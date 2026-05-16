@@ -11,7 +11,7 @@ Work in this order:
 1. Review changed files first.
 2. Step to the nearest controlling compute paths only when needed to confirm behavior or risk.
 3. Use local evidence: changed code, nearby tests, call sites, docs, and config usage.
-4. Check [software_design_patterns.md](../architecture/software_design_patterns.md) for changed code and any adjacent code whose behavior is directly affected.
+4. Check [software_design_patterns.md](../code-quality/software_design_patterns.md) for changed code and any adjacent code whose behavior is directly affected.
 5. Report only evidence-backed findings or clearly labeled risks/open questions.
 
 ## Review checklist
