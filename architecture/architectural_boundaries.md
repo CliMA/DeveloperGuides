@@ -6,13 +6,13 @@ This guide defines the layered architecture used across CliMA model repositories
 
 CliMA packages form a directed acyclic dependency graph. The canonical layering is:
 
-| Layer | Packages | Role |
-|:------|:---------|:-----|
-| L0    | [ClimaParams.jl](https://github.com/CliMA/ClimaParams.jl) | Physical constants and calibratable parameters. No CliMA-internal dependencies. |
-| L1    | ClimaComms.jl, ClimaCore.jl, Thermodynamics.jl | Foundations: device abstraction + MPI, fields & discretization, thermodynamic primitives. |
-| L2    | ClimaTimeSteppers.jl, CloudMicrophysics.jl, SurfaceFluxes.jl | Higher-level libraries built on L1 — time integration and physics parameterisations. |
-| L3    | ClimaAtmos.jl, ClimaLand.jl, ClimaOcean.jl | Model repos: compose L1 / L2 to integrate state variables. |
-| L4    | ClimaCoupler.jl | Couples multiple L3 models. |
+| Layer | Packages                                                     | Role                                                                                    |
+|:------|:-------------------------------------------------------------|:----------------------------------------------------------------------------------------|
+| L0    | [ClimaParams.jl](https://github.com/CliMA/ClimaParams.jl)    | Physical constants and calibratable parameters. No CliMA-internal dependencies.         |
+| L1    | ClimaComms.jl, ClimaCore.jl, Thermodynamics.jl               | Foundations: device abstraction + MPI, fields & discretization, thermodynamic primitives. |
+| L2    | ClimaTimeSteppers.jl, CloudMicrophysics.jl, SurfaceFluxes.jl | Higher-level libraries built on L1 — time integration and physics parameterisations.    |
+| L3    | ClimaAtmos.jl, ClimaLand.jl, ClimaOcean.jl                   | Model repos: compose L1 / L2 to integrate state variables.                              |
+| L4    | ClimaCoupler.jl                                              | Couples multiple L3 models.                                                             |
 
 **The rule**: a package at layer N may depend on packages at layers < N, but never on packages at layers ≥ N. Concretely:
 

@@ -8,26 +8,26 @@ It is generally preferable to use public functions and data structures that are 
 
 When working in a CliMA model repo you will see these aliases repeatedly. If you choose to use aliases, match them in new code so call sites stay grep-able. Do **not** invent a different alias for the same package.
 
-| Alias | Package / module                          | Where it dominates |
-|:------|:------------------------------------------|:-------------------|
-| `TD`  | `Thermodynamics`                          | every model repo |
-| `TDP` | `Thermodynamics.Parameters`               | ClimaAtmos, ClimaLand |
-| `SF`  | `SurfaceFluxes`                           | ClimaAtmos, ClimaCoupler |
-| `SFP` | `SurfaceFluxes.Parameters`                | ClimaAtmos |
-| `UF`  | `SurfaceFluxes.UniversalFunctions`        | ClimaAtmos |
-| `CM`  | `CloudMicrophysics`                       | ClimaAtmos |
-| `CM0` / `CM1` / `CM2` | `CloudMicrophysics.Microphysics{0,1,2}M` | ClimaAtmos microphysics |
-| `CMNe`| `CloudMicrophysics.MicrophysicsNonEq`     | ClimaAtmos non-equilibrium microphysics |
-| `BMT` | `CloudMicrophysics.BulkMicrophysicsTendencies` | ClimaAtmos bulk microphysics wrapper |
-| `CMP` | `CloudMicrophysics.Parameters`            | ClimaAtmos |
-| `CC`  | `ClimaCore`                               | parameter / utility code |
-| `CAP` | `ClimaAtmos.Parameters`                   | ClimaAtmos internal |
-| `CAD` | `ClimaAtmos.Diagnostics`                  | ClimaAtmos diagnostics |
-| `CP`  | `ClimaParams`                             | any repo that reads TOML parameters |
-| `IP`  | `Insolation.Parameters`                   | ClimaAtmos parameter wiring |
-| `SA`  | `StaticArrays`                            | hot-path / kernel code |
-| `RS`  | `RootSolvers`                             | Thermodynamics / CloudMicrophysics |
-| `RRTMGPI` | `ClimaAtmos.RRTMGPInterface`          | ClimaAtmos radiation |
+| Alias   | Package / module                               | Where it dominates                      |
+|:--------|:-----------------------------------------------|:----------------------------------------|
+| `TD`    | `Thermodynamics`                               | every model repo                        |
+| `TDP`   | `Thermodynamics.Parameters`                    | ClimaAtmos, ClimaLand                   |
+| `SF`    | `SurfaceFluxes`                                | ClimaAtmos, ClimaCoupler                |
+| `SFP`   | `SurfaceFluxes.Parameters`                     | ClimaAtmos                              |
+| `UF`    | `SurfaceFluxes.UniversalFunctions`             | ClimaAtmos                              |
+| `CM`    | `CloudMicrophysics`                            | ClimaAtmos                              |
+| `CM0` / `CM1` / `CM2` | `CloudMicrophysics.Microphysics{0,1,2}M` | ClimaAtmos microphysics                 |
+| `CMNe`  | `CloudMicrophysics.MicrophysicsNonEq`          | ClimaAtmos non-equilibrium microphysics |
+| `BMT`   | `CloudMicrophysics.BulkMicrophysicsTendencies` | ClimaAtmos bulk microphysics wrapper    |
+| `CMP`   | `CloudMicrophysics.Parameters`                 | ClimaAtmos                              |
+| `CC`    | `ClimaCore`                                    | parameter / utility code                |
+| `CAP`   | `ClimaAtmos.Parameters`                        | ClimaAtmos internal                     |
+| `CAD`   | `ClimaAtmos.Diagnostics`                       | ClimaAtmos diagnostics                  |
+| `CP`    | `ClimaParams`                                  | any repo that reads TOML parameters     |
+| `IP`    | `Insolation.Parameters`                        | ClimaAtmos parameter wiring             |
+| `SA`    | `StaticArrays`                                 | hot-path / kernel code                  |
+| `RS`    | `RootSolvers`                                  | Thermodynamics / CloudMicrophysics      |
+| `RRTMGPI` | `ClimaAtmos.RRTMGPInterface`                 | ClimaAtmos radiation                    |
 
 In docstrings, use the same prefix you would use in code (`TD.air_temperature`, not `Thermodynamics.air_temperature`) — readers grep on the prefix.
 
@@ -56,7 +56,7 @@ See [variable_list.md "Field Prefixes"](../code-quality/variable_list.md) for th
 
 Every CliMA package follows the same pattern for physical constants:
 
-```
+```text
 TOML files in ClimaParams/src/parameters.toml
         │
         ▼ CP.create_toml_dict(FT)

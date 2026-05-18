@@ -2,14 +2,14 @@
 
 Shared engineering standards, architectural patterns, and development guidelines for human and AI developers across the [CliMA](https://clima.caltech.edu) ecosystem.
 
-|                              |                                                  |
-|-----------------------------:|:-------------------------------------------------|
-| **License**                  | [![license][license-img]][license-url]            |
+|             |                                        |
+|------------:|:---------------------------------------|
+| **License** | [![license][license-img]][license-url] |
 
 [license-img]: https://img.shields.io/github/license/CliMA/DeveloperGuides
 [license-url]: https://github.com/CliMA/DeveloperGuides/blob/main/LICENSE
 
-### Usage
+## Usage
 
 DeveloperGuides is included as a **Git subtree** in CliMA repositories at the standardized path `docs/dev-guides/`. The consuming repo keeps its own `AGENTS.md` at the root, which references `docs/dev-guides/AGENTS.md` (the shared guide index) plus a repo-specific guide (e.g. `docs/clima_atmos_specific.md`). See the [`AGENTS.md`](AGENTS.md) for the full guide index, and [`templates/`](templates/) for ready-to-copy starter files (root `AGENTS.md`, repo-specific guide skeleton, monthly sync workflow).
 
@@ -26,6 +26,7 @@ git subtree pull --prefix docs/dev-guides \
 
 > [!NOTE]
 > **Subtree pitfalls.**
+> 
 > - DeveloperGuides ships its own `AGENTS.md`, `LICENSE`, and `README.md` at the repo root, which conflict with the consumer's own root files during `git subtree add`. Resolve by keeping the consumer's versions: `git checkout --ours AGENTS.md LICENSE README.md && git add … && git rebase --continue`.
 > - `git subtree pull` exits with an error when there are no new commits upstream. In an automated workflow, append `|| true` so the step does not fail on months with no DeveloperGuides changes.
 
@@ -35,7 +36,7 @@ Edits to shared guidelines belong here, not in the vendored copy inside a consum
 
 ## Directory Structure
 
-```
+```text
 ├── AGENTS.md                  # Master index for AI agents
 ├── architecture/              # System design, layering, contracts
 ├── performance/               # GPU, type stability, numerics, AD

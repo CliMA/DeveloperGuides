@@ -6,14 +6,14 @@ This guide covers rules for managing Julia package dependencies in CliMA reposit
 
 CliMA repos typically have several Julia environments side-by-side, each with its own `Project.toml` (and, if instantiated, `Manifest.toml`). They serve different purposes and must be kept distinct.
 
-| Path                          | What it is                                          | Activated by                                |
-|:------------------------------|:----------------------------------------------------|:--------------------------------------------|
-| `Project.toml` (repo root)    | The package itself: runtime `[deps]`, `[compat]`, `[weakdeps]`, `[extensions]`. | `using Pkg; Pkg.activate(".")` |
-| `test/Project.toml`           | Test-only dependencies (Aqua, JET, BenchmarkTools, CUDA, Documenter, etc.). | `Pkg.test()` |
-| `docs/Project.toml`           | Documentation build dependencies (Documenter, Literate, plotting). | `julia --project=docs docs/make.jl` |
-| `perf/Project.toml`           | Allocation / flame / JET scripts (BenchmarkTools, Profile tools). | `julia --project=perf perf/<script>.jl` |
-| `.buildkite/Project.toml`     | Pipeline driver environment (present in repos that run Buildkite). | invoked by the pipeline runner |
-| `<demo-dir>/Project.toml`     | Self-contained demos (e.g. `box/`, `parcel/`, `papers/` in CloudMicrophysics; `examples/` in some repos). | `julia --project=<demo-dir>` |
+| Path                          | What it is                                                                                                | Activated by                                |
+|:------------------------------|:----------------------------------------------------------------------------------------------------------|:--------------------------------------------|
+| `Project.toml` (repo root)    | The package itself: runtime `[deps]`, `[compat]`, `[weakdeps]`, `[extensions]`.                           | `using Pkg; Pkg.activate(".")`              |
+| `test/Project.toml`           | Test-only dependencies (Aqua, JET, BenchmarkTools, CUDA, Documenter, etc.).                               | `Pkg.test()`                                |
+| `docs/Project.toml`           | Documentation build dependencies (Documenter, Literate, plotting).                                        | `julia --project=docs docs/make.jl`         |
+| `perf/Project.toml`           | Allocation / flame / JET scripts (BenchmarkTools, Profile tools).                                         | `julia --project=perf perf/<script>.jl`     |
+| `.buildkite/Project.toml`     | Pipeline driver environment (present in repos that run Buildkite).                                        | invoked by the pipeline runner              |
+| `<demo-dir>/Project.toml`     | Self-contained demos (e.g. `box/`, `parcel/`, `papers/` in CloudMicrophysics; `examples/` in some repos). | `julia --project=<demo-dir>`                |
 
 Rules of thumb:
 

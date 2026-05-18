@@ -44,11 +44,11 @@ Work in this order:
 
 Use exactly these labels: `high`, `medium`, `low`. Choose the severity based on user-visible and scientific impact, not on how easy the fix is.
 
-| Label | When to use | Examples |
-|---|---|---|
-| `high` | Correctness or science regressions, hot-path performance breakage, compatibility breaks with clear impact. | Wrong numerics; broken conservation; restart non-bit-reproducibility; silently changed defaults; public API broken without deprecation; GPU runs broken; new allocation or type instability in a tendency/Jacobian hot path. |
-| `medium` | Likely regressions, plausible science risk without definitive proof, missing safeguards around changed behavior. | Plausible numerical drift; missing test coverage for changed behavior; undocumented config or diagnostic change; formatting/style violation that hides a real issue. |
-| `low` | Issues with no expected behavior impact. | Style, naming, or documentation nits; refactor suggestions with no behavior impact. May be batched into one bullet. |
+| Label    | When to use                                                                                                      | Examples                                                                                                                                                                                                                     |
+|:---------|:-----------------------------------------------------------------------------------------------------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `high`   | Correctness or science regressions, hot-path performance breakage, compatibility breaks with clear impact.       | Wrong numerics; broken conservation; restart non-bit-reproducibility; silently changed defaults; public API broken without deprecation; GPU runs broken; new allocation or type instability in a tendency/Jacobian hot path. |
+| `medium` | Likely regressions, plausible science risk without definitive proof, missing safeguards around changed behavior. | Plausible numerical drift; missing test coverage for changed behavior; undocumented config or diagnostic change; formatting/style violation that hides a real issue.                                                         |
+| `low`    | Issues with no expected behavior impact.                                                                         | Style, naming, or documentation nits; refactor suggestions with no behavior impact. May be batched into one bullet.                                                                                                          |
 
 ## Output schema (must follow)
 

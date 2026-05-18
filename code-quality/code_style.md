@@ -11,12 +11,15 @@ julia -e 'using JuliaFormatter; format(".")'
 ```
 
 or install JuliaFormatter as an app and use directly from the command-line:
+
 ```julia-repl
 julia> import Pkg; Pkg.Apps.add("JuliaFormatter")
 ```
+
 and add `~/.julia/bin/` to your PATH.
 
 Then you can run the formatter directly:
+
 ```bash
 jlfmt -i .
 ```

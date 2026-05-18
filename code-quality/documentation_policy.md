@@ -48,12 +48,12 @@ This section follows [Julia's documentation conventions](https://docs.julialang.
 
 The more central or widely-called a function is, the more documentation it earns:
 
-| Role | Minimum content |
-|---|---|
-| **User-facing API** (exported, on `api.md`, constructed by users) | Signature, summary, `# Arguments`, `# Returns` with units, at least one `# Examples` block, citations via `[Key](@cite)` where applicable, ``See also [`neighbour`](@ref)``. |
-| **Hot-path internals** (tendency functions, cache builders, Jacobian routines, core physics helpers) | Treat as public API and add: algorithmic explanation, sign conventions, side effects spelled out (which `Y`/`Yₜ`/`p` fields are read or mutated), `See also` to major callers. |
-| **Helpers with one or two call sites** | One-line summary plus a back-pointer to the caller (``Called from [`caller`](@ref)``). Skip `# Arguments` unless names/units are ambiguous. |
-| **Trivial private helpers** (e.g. `_clamp_positive`) | Docstring optional; a short comment explaining *why* the helper exists is welcome. |
+| Role                                                                                                 | Minimum content                                                                                                                                                                                                            |
+|:-----------------------------------------------------------------------------------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **User-facing API** (exported, on `api.md`, constructed by users)                                    | Signature, summary, `# Arguments`, `# Returns` with units, at least one `# Examples` block, citations via `[Key](@cite)` where applicable, ``See also [`neighbour`](@ref)``.                                               |
+| **Hot-path internals** (tendency functions, cache builders, Jacobian routines, core physics helpers) | Treat as public API and add: algorithmic explanation, sign conventions, side effects spelled out (which `Y`/`Yₜ`/`p` fields are read or mutated), `See also` to major callers.                                             |
+| **Helpers with one or two call sites**                                                               | One-line summary plus a back-pointer to the caller (``Called from [`caller`](@ref)``). Skip `# Arguments` unless names/units are ambiguous.                                                                                |
+| **Trivial private helpers** (e.g. `_clamp_positive`)                                                 | Docstring optional; a short comment explaining *why* the helper exists is welcome.                                                                                                                                         |
 
 ### 3.2 Anatomy of a docstring
 
@@ -84,25 +84,25 @@ Universal rules:
 
 Use these headings, in this order, with a single `#`. Include only what you need.
 
-| Heading | When to include |
-|---|---|
-| `# Arguments` | Positional arguments. Skip if the signature is self-explanatory and there are ≤ 2 args. |
-| `# Keyword Arguments` | Keyword arguments. Document defaults in the bullet, not just in the signature. |
-| `# Returns` | When the return value is non-obvious or has structure (`NamedTuple`, multiple values, a `Field` with non-obvious units). |
-| `# Fields` | For struct types — see §3.5. |
-| `# Constructor` | When an abstract or parametric type has a meaningful outer constructor. |
-| `# Examples` | At least one short example for any user-facing function, type, or setup. |
-| `# Notes` | Caveats, performance notes. |
-| `# Extended help` | Optional appendix shown only via `??function_name` — see §3.7. |
+| Heading                | When to include                                                                                               |
+|:-----------------------|:--------------------------------------------------------------------------------------------------------------|
+| `# Arguments`          | Positional arguments. Skip if the signature is self-explanatory and there are ≤ 2 args.                       |
+| `# Keyword Arguments`  | Keyword arguments. Document defaults in the bullet, not just in the signature.                                |
+| `# Returns`            | When the return value is non-obvious or has structure (`NamedTuple`, multiple values, a `Field` with non-obvious units). |
+| `# Fields`             | For struct types — see §3.5.                                                                                  |
+| `# Constructor`        | When an abstract or parametric type has a meaningful outer constructor.                                       |
+| `# Examples`           | At least one short example for any user-facing function, type, or setup.                                      |
+| `# Notes`              | Caveats, performance notes.                                                                                   |
+| `# Extended help`      | Optional appendix shown only via `??function_name` — see §3.7.                                                |
 
 Use the plural form (`# Arguments`, `# Examples`) — Julia's official convention. Fix variants (`## Example`, `Arguments:`) when you encounter them.
 
 **Argument and field bullet format:**
 
-```
+~~~text
 - `name`: One-line description. Units in square brackets at the end, e.g. [kg/m³].
   Continuation lines indented two spaces under the bullet.
-```
+~~~
 
 Each bullet starts with the backticked identifier. For complex options, list valid values as a nested bullet list.
 
@@ -126,23 +126,23 @@ If a docstring has many backslashes, use `raw"""..."""` so Julia does not interp
 
 **Citations.** Cite via Documenter's bibliography integration. The bibliography lives at `docs/src/bibliography.bib`:
 
-```markdown
+~~~markdown
 Described in [Smith2020](@cite). The scheme of [Stevens2005](@cite) is extended by [Ackerman2009](@cite).
-```
+~~~
 
 Add the BibTeX entry before citing — the docs build fails otherwise.
 
 **Cross-references.** Every function, type, or method name you mention should be linked, not just backticked. The `@ref` form costs one extra `(@ref)` and gives the reader a click-through:
 
-```markdown
+~~~markdown
 See also [`compute_strain_rate_face_full!`](@ref) for the face-centered version.
-```
+~~~
 
 The target must be documented and registered on a docs page (or exported). For cross-repo references, use [DocumenterInterLinks.jl](https://juliadocs.org/DocumenterInterLinks.jl/stable/) and the `@extref` syntax:
 
-```markdown
+~~~markdown
 Wraps [`Thermodynamics.air_temperature`](@extref).
-```
+~~~
 
 Without DocumenterInterLinks configured, fall back to fully qualified names in backticks so the reader at least sees the package qualifier — but prefer to set up DocumenterInterLinks.
 
@@ -228,11 +228,11 @@ See the cheat sheet (§3.10) for the full skeleton.
 
 **Admonitions** ([Documenter syntax](https://documenter.juliadocs.org/stable/showcase/#Admonitions)) — use sparingly for genuinely important caveats. Kinds: `note`, `warning`, `tip`, `info`, `compat`, `danger`.
 
-```markdown
+~~~markdown
 !!! warning
     Calling this function outside `set_precomputed_quantities!` reads stale `p.scratch`
     values. Run after `set_implicit_precomputed_quantities_part1!`.
-```
+~~~
 
 Keep to 1–3 sentences. If you find yourself writing more than two admonitions in one docstring, the docstring is doing too much — split it or move content into `docs/src/`.
 

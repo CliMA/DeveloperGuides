@@ -330,6 +330,7 @@ x = map(f, SVector(a, b, c))
 Generated functions are extremely versatile and helpful for debugging, but they have significantly higher compilation latencies than non-generated functions.
 
 To minimize compilation time, only use generated functions when absolutely necessary. This includes the following situations:
+
 - Guaranteeing inlining or unrolling of code, to avoid compilation errors when the compiler fails to perform these optimizations.
 - Dynamically constructing a `String` inside a GPU kernel, which requires runtime allocations.
 - Dynamically constructing a `Symbol` inside a GPU kernel, since `Symbol`s are implemented as interned strings.
