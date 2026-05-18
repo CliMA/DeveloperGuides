@@ -44,6 +44,7 @@ Before making changes that are externally visible or scientifically consequentia
 3. [debugging.md](workflow/debugging.md) — interactive debugging recipes: numerical instabilities, dispatch, `Field` plotting.
 4. [review.md](workflow/review.md) — PR review instructions and checklist.
 5. [ci_triage.md](workflow/ci_triage.md) — checklist for "passes locally, fails on CI" failure modes.
+6. [cross_repo_issue_pr_search.md](workflow/cross_repo_issue_pr_search.md) — org-scoped GitHub search to find and filter issues/PRs across CliMA.
 
 ## Self-correction
 
