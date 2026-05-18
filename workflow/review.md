@@ -42,51 +42,13 @@ Work in this order:
 
 ## Severity rules
 
-Use exactly these labels for every finding: `high`, `medium`, `low`.
+Use exactly these labels: `high`, `medium`, `low`. Choose the severity based on user-visible and scientific impact, not on how easy the fix is.
 
-Choose the severity based on the user-visible and scientific impact, not on how easy the fix is.
-
-### `high`
-
-Use `high` for correctness or science regressions, hot-path performance breakage, or compatibility breaks with clear impact.
-
-Examples that belong in `high`:
-
-- Wrong numerics.
-- Broken conservation.
-- Restart non-bit-reproducibility.
-- Silently changed defaults that alter a published config.
-- Public API breaking changes without deprecation.
-- GPU runs broken.
-- Allocations or regressions in a tendency hot path.
-- Allocations or regressions in a Jacobian hot path.
-- Type instability inside a hot path.
-- A new allocation introduced inside a hot path.
-
-### `medium`
-
-Use `medium` for likely regressions, plausible science risk without definitive proof, or missing safeguards around changed behavior.
-
-Examples that belong in `medium`:
-
-- Plausible numerical drift.
-- Missing test coverage for changed behavior.
-- Undocumented config change.
-- Undocumented diagnostic change.
-- A formatting or style violation that hides a real issue.
-
-### `low`
-
-Use `low` for issues with no expected behavior impact.
-
-Examples that belong in `low`:
-
-- Style nits.
-- Naming nits.
-- Documentation nits.
-- Refactor suggestions with no behavior impact.
-
-Low-severity items may be batched into a single bullet when that improves readability.
+| Label | When to use | Examples |
+|---|---|---|
+| `high` | Correctness or science regressions, hot-path performance breakage, compatibility breaks with clear impact. | Wrong numerics; broken conservation; restart non-bit-reproducibility; silently changed defaults; public API broken without deprecation; GPU runs broken; new allocation or type instability in a tendency/Jacobian hot path. |
+| `medium` | Likely regressions, plausible science risk without definitive proof, missing safeguards around changed behavior. | Plausible numerical drift; missing test coverage for changed behavior; undocumented config or diagnostic change; formatting/style violation that hides a real issue. |
+| `low` | Issues with no expected behavior impact. | Style, naming, or documentation nits; refactor suggestions with no behavior impact. May be batched into one bullet. |
 
 ## Output schema (must follow)
 

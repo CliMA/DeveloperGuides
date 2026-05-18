@@ -43,21 +43,14 @@ Model repos (ClimaAtmos, ClimaLand) follow a common state layout:
 Rules implied by this layout:
 
 1. **Never allocate `Field`s inside a tendency or cache setter.** To avoid doing so, use a scratch field from `p.scratch` (allocated during model construction in `src/cache/` for ClimaAtmos), or use lazy broadcasting. See the "Materialization" section of [GPU Performance Guide §3](../performance/gpu_performance.md).
-2. **`Yₜ` may only be written into, not read from.** Reading `Yₜ` inside a tendency function couples stages of the time integrator and breaks reproducibility. [KMD: ClimaLand has some limiters which use the value of Yt to clip Yt]
+2. **`Yₜ` should be treated as write-only inside tendency functions.** Reading `Yₜ` back couples stages of the time integrator and can break reproducibility. The one accepted exception is *post-hoc limiters* (e.g., in ClimaLand) that clip the assembled `Yₜ` after all contributions have been written — these are a deliberate non-linear projection applied at the end of the right-hand side, not a hidden coupling between stages.
 3. **`p` must be treated as effectively immutable from the integrator's point of view.** You can write to `p.precomputed` and `p.scratch` *as part of refreshing the cache for the current stage*, but you must not mutate `p` in ways that would result in different behavior on a subsequent call with the same values of `Y` and `t`.
 
 ## 3. Cell-center vs cell-face notation (`ᶜ` / `ᶠ`)
 
-ClimaAtmos uses two Unicode prefixes to distinguish where a field lives on the staggered vertical grid:
+ClimaCore-based repos use the Unicode prefixes `ᶜ` (cell-center, U+1D9C, typed `\^c<TAB>`) and `ᶠ` (cell-face, U+1DA0, typed `\^f<TAB>`) to mark the staggered-grid location of a field. The prefix is part of the variable name, not decoration: `ᶜρ` and `ᶠρ` are different fields living on different `ClimaCore.Spaces.AbstractSpace`s. Operators follow the same convention — the prefix on `ᶜgradᵥ`, `ᶠinterp`, etc. names the space of the *result*. Scalars and pointwise values do not carry the prefix.
 
-- `ᶜ` (U+1D9C) — cell-center field. Typed in most editors as a Unicode escape or with `\^c<TAB>`.
-- `ᶠ` (U+1DA0) — cell-face field. Typed as `\^f<TAB>`.
-
-Examples: `ᶜρ`, `ᶠu³`, `ᶜT`, `ᶠw`. These prefixes are part of the variable name, not decoration — `ᶜρ` and `ᶠρ` are different fields with different `ClimaCore.Spaces.AbstractSpace`s. Operators (`ᶜgradᵥ`, `ᶠinterp`, etc.) follow the same convention: the prefix tells you the space on which the *result* of an operator lives.
-
-When introducing a new field, copy the level prefix from an analogous existing field. Mismatched center/face spaces are a frequent source of errors when broadcasting over ClimaCore fields, but these errors can be avoided by keeping track of `ᶜ`/`ᶠ` prefixes in variable names.
-
-When accessing a single value from a field, do not add a `ᶜ`/`ᶠ` prefix to its variable name. To avoid confusing scalar quantities with fields, these prefixes should *only* be used when referring to fields.
+See [variable_list.md "Field Prefixes"](../code-quality/variable_list.md) for the full convention, and copy the prefix from an analogous existing field when introducing a new one.
 
 ## 4. Parameter wiring (`ClimaParams` → physics libraries → model)
 
@@ -93,18 +86,15 @@ Most CliMA model repos run both GitHub Actions (formatter, unit tests, docs) and
 
 - **GitHub Actions** lives in `.github/workflows/`. The common workflows are `JuliaFormatter.yml` (or `julia_formatter.yml`), `UnitTests.yml`, `Documentation.yml`, and `Downstream.yml`.
 - **Buildkite** lives in `.buildkite/` with a top-level `pipeline.yml` and a runner script (e.g. `ci_driver.jl` in ClimaAtmos). Jobs are keyed by `job_id` strings that also drive output paths and reproducibility tests.
-- **Allocation benchmarks** (typically in `perf/`) are *not* run in CI. Allocation regressions must be caught at review time via the `@allocated` pattern in [GPU Performance Guide §9](../performance/gpu_performance.md).
+- **Allocation benchmarks** (typically in `perf/`) are *not* run in CI. Allocation regressions must be caught at review time via the `@allocated == 0` pattern in [allocation_debugging.md §1](../performance/allocation_debugging.md).
 
 When a CI job is mentioned by name in a guide or review, it is almost always a Buildkite job name; resolve it by searching `.buildkite/pipeline.yml`.
 
 ## 6. Reproducibility tests (model repos)
 
-Model repos (notably ClimaAtmos) maintain a `reproducibility_tests/` directory that pins the simulation output of a fixed set of canonical jobs to within bit tolerance. The reference output is keyed off a numeric counter (`reproducibility_tests/ref_counter.jl`).
+Some model repos (notably ClimaAtmos) maintain a `reproducibility_tests/` directory that pins the simulation output of canonical jobs to within bit tolerance, keyed off `reproducibility_tests/ref_counter.jl`. A code change that flips a reproducibility test is itself a finding: report it in the PR description with the job name and the MSE diff, not as a hidden side effect.
 
-Rules for agents:
-
-- **Do not change `ref_counter.jl`, MSE tolerance files, or recorded reference values without an explicit user instruction.** Bumping the counter is how reproducibility-breaking changes are *deliberately* shipped, and it requires human review. See [agent_autonomy.md](../workflow/agent_autonomy.md).
-- A code change that flips a reproducibility test is itself a finding: report it in the PR description with the job name and the diff in MSE, not as a hidden side effect.
+Reference counters and MSE tolerance files must not be modified without explicit user instruction — see [agent_autonomy.md](../workflow/agent_autonomy.md) for the full rule.
 
 ## 7. Diagnostics
 

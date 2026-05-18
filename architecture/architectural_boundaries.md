@@ -34,7 +34,7 @@ When adding new code, place it in the layer that owns the relevant concern. Do n
 ## 2. Parameter container design
 
 - Containers should be focused on the specific physical or mathematical domain they serve.
-- Do not add "zombie" forward-compatibility fields to support not-yet-refactored callers; refactor the callers instead. [KMD: what does this mean?]
+- Don't keep parameters "just in case." Fields added to a struct only to keep an old caller compiling — with no current user — accumulate as dead weight. When a refactor removes the last caller of a field, remove the field too.
 - Keep parameter containers focused on physical constants and model parameters. Configuration flags, output options, and diagnostic metadata belong in the model's infrastructure layer, not in physics parameter structs.
 
 ## 3. Avoid hidden field dependencies
@@ -61,7 +61,7 @@ rain_velocity_params = tv_params.chen2022.rain
 
 ## 4. Module import rules
 
-See [SDP 2](software_design_patterns.md) for the rule on cross-submodule imports inside `src/`.
+See [SDP 2](../code-quality/software_design_patterns.md) for the rule on cross-submodule imports inside `src/`.
 
 ## Self-correction
 

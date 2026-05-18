@@ -11,7 +11,7 @@ The shared engineering guidelines are vendored as a Git subtree at `docs/dev-gui
 - GPU performance, type stability, and AD compatibility
 - Code style, testing, and PR review
 
-Edits to shared guidelines belong in `CliMA/DeveloperGuides`, not in the vendored copy here. A scheduled workflow (`.github/workflows/update_dev_guides.yml`) syncs the subtree weekly.
+Edits to shared guidelines belong in `CliMA/DeveloperGuides`, not in the vendored copy here. A scheduled workflow (`.github/workflows/update_dev_guides.yml`) syncs the subtree monthly.
 
 ## Repo-specific guide
 

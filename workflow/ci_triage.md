@@ -61,7 +61,7 @@ The `Documentation` workflow runs `docs/make.jl`. Two recurring failures:
 
 ## 10. Formatter
 
-A formatter failure is almost never about your changes: it's that your local JuliaFormatter major version differs from CI's. Check the JuliaFormatter workflow file under `.github/workflows/` (named `JuliaFormatter.yml` or `julia_formatter.yml` depending on the repo) for the `version:` input and run the matching JuliaFormatter locally before pushing. See [code_style.md §1](../code-quality/code_style.md).
+A formatter failure is almost never about your changes — your local JuliaFormatter major version differs from CI's. See [code_style.md §1](../code-quality/code_style.md) for the version-matching procedure.
 
 ## 11. Aqua
 

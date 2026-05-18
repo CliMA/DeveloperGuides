@@ -1,17 +1,20 @@
 # CliMA Developer Guides — Agent Index
 
-Read this file first. It is the master index for all shared engineering guidelines. Each guide applies across the CliMA ecosystem unless stated otherwise.
+Read this file first. It is the main index for all shared engineering guidelines. Each guide applies across the CliMA ecosystem unless stated otherwise.
 
-In consumer repos, these guides are incorporated as a Git subtree at `docs/dev-guides/` (Julia's `Pkg` cannot resolve git submodules, so subtree is the standard mechanism across the CliMA ecosystem). The consumer's root `AGENTS.md` references this file and adds a pointer to the repo-specific guide. See the top-level [README](README.md) for the subtree workflow.
+In consumer repos, these guides live at `docs/dev-guides/` and are supplied by a git subtree from the canonical source <https://github.com/CliMA/DeveloperGuides>. The consumer's root `AGENTS.md` references this file and the repo-specific guide. Edit shared guides in the canonical repo, not in the subtree copy.
+
+## Before you act: agent autonomy
+
+Before making changes that are externally visible or scientifically consequential (`git push`, version bumps, reproducibility-test edits, CI config changes, public API renames), check [workflow/agent_autonomy.md](workflow/agent_autonomy.md). The boundaries listed there require explicit user approval.
 
 ## Architecture
 
 1. [repo_structure.md](architecture/repo_structure.md) — how to navigate any CliMA Julia package.
 2. [ecosystem_conventions.md](architecture/ecosystem_conventions.md) — module aliases, `Y`/`Yₜ`/`p` state layout, `ᶜ`/`ᶠ` notation, CI structure, reproducibility, diagnostics.
 3. [architectural_boundaries.md](architecture/architectural_boundaries.md) — layered architecture and boundary rules.
-4. [software_design_patterns.md](code-quality/software_design_patterns.md) — numbered SDPs: branchless logic, functors, parameter extraction, etc.
-5. [cross_repo_contracts.md](architecture/cross_repo_contracts.md) — call-site conventions for ecosystem packages.
-6. [dependency_management.md](architecture/dependency_management.md) — runtime vs dev deps, compat bounds.
+4. [cross_repo_contracts.md](architecture/cross_repo_contracts.md) — call-site conventions for ecosystem packages.
+5. [dependency_management.md](architecture/dependency_management.md) — runtime vs dev deps, compat bounds.
 
 ## Performance
 
@@ -27,6 +30,7 @@ In consumer repos, these guides are incorporated as a Git subtree at `docs/dev-g
 2. [documentation_policy.md](code-quality/documentation_policy.md) — docstrings, repository-level docs, minimally viable documentation.
 3. [changelogs_and_versions.md](code-quality/changelogs_and_versions.md) — `NEWS.md` format, SemVer rules, and the release/tagging flow.
 4. [variable_list.md](code-quality/variable_list.md) — standardized CliMA variable naming conventions.
+5. [software_design_patterns.md](code-quality/software_design_patterns.md) — numbered SDPs: branchless logic, functors, parameter extraction, etc.
 
 ## Infrastructure
 

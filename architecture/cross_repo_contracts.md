@@ -22,7 +22,7 @@ Treat anything not in the package's `docs/` as internal and unstable.
 - Pass the thermodynamics parameter container (e.g. `p.params.thermodynamics_params` in ClimaAtmos) into thermodynamic functions; do not hard-code thermodynamic constants.
 - The public API is fully functional and stateless: functions take a parameter container and the relevant scalar arguments directly.
 - Many functions are dispatched on a *formulation type* that names the independent variables. The available formulations (subtypes of `IndepVars`) are `TD.ρe()`, `TD.pe()`, `TD.ph()`, `TD.pρ()`, `TD.pθ_li()`, `TD.ρθ_li()`. For example: `TD.air_temperature(thp, TD.ph(), h, q_tot, q_liq, q_ice)`.
-- For iterative phase-equilibrium calculations inside GPU kernels, prefer variants that accept a fixed iteration count to avoid thread divergence. See [SDP 19](software_design_patterns.md).
+- For iterative phase-equilibrium calculations inside GPU kernels, prefer variants that accept a fixed iteration count to avoid thread divergence. See [SDP 19](../code-quality/software_design_patterns.md).
 
 ## CloudMicrophysics.jl
 
@@ -38,16 +38,7 @@ Treat anything not in the package's `docs/` as internal and unstable.
 
 ## ClimaParams.jl
 
-- Extract only the needed parameters to named local variables before a `@.` broadcast. If a large parameter struct (e.g., the full `p.params` container) is captured in the broadcast closure, the entire struct is pushed into GPU kernel parameter memory, which can exceed hardware limits. Extracting the specific sub-struct keeps the kernel launch parameters small ([SDP 20](software_design_patterns.md)).
-
-```julia
-# ❌ Captures the full params container — may exceed GPU parameter memory
-@. ᶜT = TD.air_temperature(p.params, TD.ρe(), Y.c.ρe / Y.c.ρ, Y.c.ρq_tot / Y.c.ρ)
-
-# ✅ Extract the sub-struct; only it enters the kernel
-thp = p.params.thermodynamics_params
-@. ᶜT = TD.air_temperature(thp, TD.ρe(), Y.c.ρe / Y.c.ρ, Y.c.ρq_tot / Y.c.ρ)
-```
+Extract the specific parameter sub-struct (e.g. `thp = p.params.thermodynamics_params`) to a local variable before any `@.` broadcast — capturing the full `p.params` container can push a large struct into GPU kernel parameter memory and exceed hardware limits. See [SDP 20](../code-quality/software_design_patterns.md) for the rule, rationale, and worked example.
 
 ## General cross-repo guidance
 

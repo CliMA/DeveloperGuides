@@ -47,16 +47,7 @@ result = ifelse(x > zero(x), log_term, zero(x))
 
 ## 2. Functors over closures
 
-Closures that capture local variables produce heap allocations ("boxed variables") and may trigger `InvalidIRError: unsupported dynamic function invocation` on GPU. Replace them with callable structs (functors). See [SDP 18](../code-quality/software_design_patterns.md).
-
-Performance comparison (microphysics case study):
-
-| Implementation | Allocations per grid point | GPU status |
-|:---|:---|:---|
-| Closure | ~1.1 KB | ❌ InvalidIRError |
-| Functor | ~16 bytes (fixed overhead) | ✅ Optimized kernel |
-
-Validation: after a warm-up call, `@allocated integrate(functor, data)` should return 0.
+Closures that capture local variables produce heap allocations ("boxed variables") and may trigger `InvalidIRError: unsupported dynamic function invocation` on GPU. Replace them with callable structs (functors). See [SDP 18](../code-quality/software_design_patterns.md) for the canonical pattern and the closure-vs-functor cost comparison.
 
 ## 3. `lazy()` broadcast fusion
 
@@ -122,12 +113,7 @@ Use `$expr` to prevent the `@.` macro from broadcasting over a subexpression. Th
 
 ### Parameter extraction
 
-Extract non-`Field` arguments to local variables before the `@.` block:
-
-```julia
-thp = p.params.thermodynamics_params
-@. result = my_physics(thp, Y.c.T, Y.c.ρ)
-```
+Extract non-`Field` arguments to local variables before the `@.` block — see [SDP 20](../code-quality/software_design_patterns.md) for the rule and rationale.
 
 ## 5. Register pressure and function size
 
@@ -141,16 +127,7 @@ Convergence-based loops (`while err > tol`) cause thread divergence when differe
 
 ## 7. GPU-safe error handling
 
-- Use `error("message")`, not `@assert`. See [SDP 11](../code-quality/software_design_patterns.md).
-- Do not interpolate runtime variables into error strings inside kernels. The string interpolation allocates and may trigger dynamic dispatch.
-
-```julia
-# ❌ String interpolation allocates
-error("Invalid value: $x")
-
-# ✅ Static message only
-error("Invalid value encountered")
-```
+Use `error("static message")` instead of `@assert`, and do not interpolate runtime variables into error strings inside kernels. See [SDP 11](../code-quality/software_design_patterns.md).
 
 ## 8. `isbits` requirement
 
@@ -181,18 +158,9 @@ When defining a new struct that wraps device-resident arrays, add an `Adapt.adap
 
 Avoid using `DataTypes` (e.g. `Float64`) or their aliases (e.g `FT`) directly in broadcast kernels. This can cause `isbits` failures on different julia versions.
 
-## 9. Allocation verification workflow
+## 9. Allocation verification
 
-After implementing or modifying hot-path code, verify zero allocations:
-
-```julia
-# Warm up (forces compilation)
-remaining_tendency!(Yₜ, Y, p, t)
-# Assert zero allocations
-@test (@allocated remaining_tendency!(Yₜ, Y, p, t)) == 0
-```
-
-Allocation benchmarks in `perf/` are not run automatically in CI. Allocation regressions must be caught during review.
+After implementing or modifying hot-path code, verify zero allocations with the warm-up + `@allocated == 0` regression-test pattern documented in [allocation_debugging.md §1](allocation_debugging.md). Allocation benchmarks in `perf/` are not run automatically in CI, so allocation regressions must be caught at review time.
 
 ## Self-correction
 

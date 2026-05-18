@@ -75,13 +75,7 @@ When `log`/`sqrt`/division appears inside an `ifelse`, the guard goes *before* t
 
 ## 3. AD-compatible clamping
 
-Standard `clamp(x, low, high)` is generally safe for most uses. For zero-clamping, the canonical CliMA idiom is `max(zero(x), x)` (exported as `CloudMicrophysics.Utilities.clamp_to_nonneg`):
-
-```julia
-@inline clamp_to_nonneg(x) = max(zero(x), x)
-```
-
-`max` is differentiable in the active branch and propagates Dual partials through whichever argument wins. A branchless equivalent is `ifelse(x < zero(x), zero(x) * x, x)`, where `zero(x) * x` ensures the negative branch carries the same type (including Dual partials) as `x`.
+For zero-clamping, the canonical CliMA idiom is `max(zero(x), x)` (exported as `CloudMicrophysics.Utilities.clamp_to_nonneg`). See [ad_compatibility.md](ad_compatibility.md) for the full pattern and Dual-number rationale.
 
 ## 4. Conservation invariants
 
@@ -89,15 +83,7 @@ Mass, energy, and tracer conservation are verified at integration scale, not in 
 
 ## 5. Avoid `@assert` for runtime checks inside kernels
 
-Use `error("message")` instead of `@assert`. Do not capture runtime variables in the error message. See [SDP 11](../code-quality/software_design_patterns.md).
-
-```julia
-# ❌ @assert allocates; string interpolation triggers dynamic dispatch
-@assert x > 0 "x must be positive, got $x"
-
-# ✅ Static error message
-x > 0 || error("x must be positive")
-```
+Use `error("static message")` instead. See [SDP 11](../code-quality/software_design_patterns.md).
 
 ## Self-correction
 
