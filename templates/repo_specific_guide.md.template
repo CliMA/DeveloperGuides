@@ -1,7 +1,13 @@
 # REPO_NAME — Repo-Specific Guide
 
-<!-- Replace REPO_NAME throughout. This file documents things specific to this
-     package that are NOT covered by the shared DeveloperGuides. -->
+<!-- THIS FILE IS YOURS. The dev-guides sync scaffolds it once and never
+     overwrites it (https://github.com/CliMA/DeveloperGuides). Edit it freely.
+     Replace REPO_NAME throughout. Document things specific to this package that
+     are NOT covered by the shared guides under docs/dev-guides/.
+
+     If two packages merge into this repo, give each one its own guide
+     (e.g. docs/cloudmicrophysics_specific.md) and link them from the root
+     AGENTS.md, rather than overloading this single file. -->
 
 ## Package overview
 
