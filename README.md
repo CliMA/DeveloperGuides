@@ -20,11 +20,12 @@ Each consumer keeps its own root `AGENTS.md` (referencing `docs/dev-guides/AGENT
 Run this from the root of the repo you want to subscribe. It is safe to re-run — `mktemp` avoids any clone collision and the sync converges, so a second run reports no changes:
 
 ```bash
-DIR=$(mktemp -d) && \
-  git clone --depth 1 https://github.com/CliMA/DeveloperGuides "$DIR" && \
-  julia "$DIR/sync/sync.jl" --target . ; \
-  rm -rf "$DIR"
+(DIR=$(mktemp -d); trap 'rm -rf "$DIR"' EXIT
+ git clone --depth 1 https://github.com/CliMA/DeveloperGuides "$DIR" \
+   && julia "$DIR/sync/sync.jl" --target .)
 ```
+
+The subshell + `trap` cleans up the temp checkout while still letting a failure (or `--check` drift) propagate through the exit status.
 
 That single command:
 - mirrors the shared guides into `docs/dev-guides/` and writes the enforced config files,
@@ -33,8 +34,9 @@ That single command:
 so after you commit the result the repo stays up to date automatically — the scheduled workflow re-runs the sync and opens a PR whenever central changes. To preview without writing anything, append `--check` (exits non-zero if the repo is out of sync):
 
 ```bash
-DIR=$(mktemp -d) && git clone --depth 1 https://github.com/CliMA/DeveloperGuides "$DIR" && \
-  julia "$DIR/sync/sync.jl" --target . --check ; rm -rf "$DIR"
+(DIR=$(mktemp -d); trap 'rm -rf "$DIR"' EXIT
+ git clone --depth 1 https://github.com/CliMA/DeveloperGuides "$DIR" \
+   && julia "$DIR/sync/sync.jl" --target . --check)
 ```
 
 ### Enforced vs. owned files
@@ -45,19 +47,17 @@ DIR=$(mktemp -d) && git clone --depth 1 https://github.com/CliMA/DeveloperGuides
 
 Every synced file says so in its header (config files carry a "SYNCED — DO NOT EDIT" banner; the mirror gets a generated `docs/dev-guides/README.md` notice), each linking back here.
 
-### Merging repos (e.g. CloudMicrophysics → ClimaAtmos)
+### Consumer overrides (`.devguides.toml`)
 
-The sync is designed so consolidating two subscribers is painless:
+A consumer can place a `.devguides.toml` at its repo root to adjust the sync for that repo — skip a scaffold it doesn't want recreated, or add extra `preserve` globs:
 
-- **Enforced config is byte-identical across all subscribers**, so the merged repo has no conflicts in `.pre-commit-config.yaml`, `.JuliaFormatter.toml`, `.dev/format/`, or `julia_formatter.yml` — they're the same central copy.
-- **Keep each package's repo-specific content in distinct files.** Give the absorbed package its own guide (`docs/cloudmicrophysics_specific.md`) and link both from the root `AGENTS.md`. For local guide extensions, use package-scoped names like `code_style.cloudmicrophysics.local.md` (still matched by the `*.local.md` preserve rule).
-- **Opt out of resurrecting stubs.** If the merged repo deletes the generic `docs/repo_specific_guide.md`, add a consumer-owned `.devguides.toml` at the repo root so the sync doesn't recreate it:
+```toml
+# .devguides.toml — consumer-owned; never synced.
+skip_scaffold = ["docs/repo_specific_guide.md"]  # don't (re)create these stubs
+preserve = ["*.notes.local.md"]                  # extra mirror preserve globs (additive)
+```
 
-  ```toml
-  # .devguides.toml — consumer-owned; never synced.
-  skip_scaffold = ["docs/repo_specific_guide.md"]  # don't recreate these stubs
-  preserve = ["*.cloudmicrophysics.local.md"]      # extra mirror preserve globs (additive)
-  ```
+(ClimaAtmos uses this to keep its existing `docs/clima_atmos_specific.md` instead of the generic stub.) This is also what keeps consolidation sane if two packages are ever merged into one repo: enforced config is byte-identical across subscribers, so it merges without conflict, and `skip_scaffold` stops orphaned stubs from reappearing.
 
 ### Contributing back
 
