@@ -329,6 +329,20 @@ abstract type Foo end
 - **Mixing imperative and third person** within one docstring — pick one.
 - **Multi-paragraph docstrings on internal helpers.** If you are writing more than ~15 lines for a helper called from one place, the prose belongs in a block comment near the call site or on a docs page.
 
+### 3.12 Verifying your docstring
+
+After writing or editing a docstring, check that it renders:
+
+- **REPL** — `?your_thing` shows everything up to `# Extended help`; `??your_thing` shows the full docstring. From the shell: `julia --project -e 'using YourPackage; @doc YourPackage.your_thing'`.
+- **Build the docs locally:**
+  ~~~sh
+  julia --project=docs/ -e 'using Pkg; Pkg.instantiate(); Pkg.develop(PackageSpec(path=pwd()))'
+  JULIA_DEBUG=Documenter julia --project=docs/ docs/make.jl
+  ~~~
+  Open `docs/build/index.html`. Warnings about broken `@ref` / `@cite` mean cross-references are wrong — fix them before merging. (For continuous local preview, `LiveServer.servedocs()` — see [onboarding.md §6](../workflow/onboarding.md).)
+
+For a new exported symbol, also add it to the appropriate `docs/src/` page (typically `api.md`); otherwise it renders only via `?` in the REPL, not on the API page.
+
 ## 4. Documenter.jl pitfalls
 
 **Markdown link ambiguity.** `[kg/m^3](description)` is parsed as a markdown link and produces `:cross_references` errors if the parenthetical text is not a URL. Fix: use parentheses for units (`(kg/m^3)`), or separate brackets and parentheses with punctuation. Do not attempt to escape brackets with backslashes in Julia string literals — that causes invalid-escape-sequence errors during precompilation.
