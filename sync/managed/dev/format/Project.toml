@@ -2,9 +2,9 @@
 # (see ../../.pre-commit-config.yaml).
 #
 # ╔══════════════════════════════════════════════════════════════════════════╗
-# ║ SYNCED FROM CliMA/DeveloperGuides — DO NOT EDIT IN THIS REPO.             ║
-# ║ This file is overwritten on every dev-guides sync. To change it, open a   ║
-# ║ PR at https://github.com/CliMA/DeveloperGuides (sync/managed/).           ║
+# ║ SYNCED FROM CliMA/DeveloperGuides — DO NOT EDIT IN THIS REPO.            ║
+# ║ This file is overwritten on every dev-guides sync. To change it, open a  ║
+# ║ PR at https://github.com/CliMA/DeveloperGuides (sync/managed/).          ║
 # ╚══════════════════════════════════════════════════════════════════════════╝
 #
 # JuliaFormatter is pinned to v1 here so the hook matches the CI formatter check
