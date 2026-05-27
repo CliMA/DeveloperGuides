@@ -66,3 +66,43 @@ See [SDP 2](../code-quality/software_design_patterns.md) for the rule on cross-s
 ## Self-correction
 
 If this guide is discovered to be stale or missing a pattern, update it.
+
+## Team ownership
+
+This section defines which team is responsible for each aspect of each package.
+Note that non-owners can still be contributors.
+However, owners have the final say on decisions and are accountable for the outcomes of the given package/aspect.
+
+| Package | Code | External issue triage | External PR triage | Dependabot PRs | Releases | Dependency updates | CI infra | Nightly runs | Weekly runs |
+| :------ | :--- | :-------------------- | :----------------- | :------------- | :-------- | :----------------- | :------- | :----------- | :---------- |
+| ClimaParams | SW | SW | SW | SW | SW | SW | SW | — | — |
+| RootSolvers | SW | SW | SW | SW | SW | SW | SW | — | — |
+| UnrolledUtilities | SW | SW | SW | SW | SW | SW | SW | — | — |
+| LazyBroadcast | SW | SW | SW | SW | SW | SW | SW | — | — |
+| MultiBroadcastFusion | SW | SW | SW | SW | SW | SW | SW | — | — |
+| EnsembleKalmanProcesses | DA/ML | DA/ML | DA/ML | DA/ML | DA/ML | DA/ML | DA/ML | — | — |
+| NullBroadcasts | SW | SW | SW | SW | SW | SW | SW | — | — |
+| RandomFeatures | DA/ML | DA/ML | DA/ML | DA/ML | DA/ML | DA/ML | DA/ML | — | — |
+| ClimaComms | SW | SW | SW | SW | SW | SW | SW | — | — |
+| ClimaCore | SW | SW | SW | SW | SW | SW | SW | — | — |
+| Thermodynamics | Atmos | Atmos | Atmos | SW | SW | SW | SW | — | — |
+| CubedSphere | SW | SW | SW | SW | SW | SW | SW | — | — |
+| ClimaAnalysis | SW | SW | SW | SW | SW | SW | SW | — | — |
+| ClimaUtilities | SW | SW | SW | SW | SW | SW | SW | — | — |
+| ClimaInterpolations | SW | SW | SW | SW | SW | SW | SW | — | — |
+| SeawaterPolynomials | Ocean | Ocean | Ocean | Ocean | Ocean | Ocean | Ocean | — | — |
+| ClimaDiagnostics | SW | SW | SW | SW | SW | SW | SW | — | — |
+| ClimaTimeSteppers | SW | SW | SW | SW | SW | SW | SW | — | — |
+| CloudMicrophysics | Atmos | Atmos | Atmos | SW | SW | SW | SW | — | — |
+| SurfaceFluxes | Atmos | Atmos | Atmos | SW | SW | SW | SW | — | — |
+| Insolation | Atmos | Atmos | Atmos | SW | SW | SW | SW | — | — |
+| RRTMGP | Atmos | Atmos | Atmos | SW | SW | SW | SW | — | — |
+| AtmosphericProfilesLibrary | Atmos | Atmos | Atmos | SW | SW | SW | SW | — | — |
+| Oceananigans | Ocean | Ocean | Ocean | Ocean | Ocean | Ocean | Ocean | — | — |
+| ClimaAtmos | Atmos | Atmos | Atmos | SW | SW | SW | SW | Atmos | Atmos |
+| ClimaLand | Land | Land | Land | SW | SW | SW | SW | Land | Land |
+| ClimaOcean | Ocean | Ocean | Ocean | Ocean | Ocean | Ocean | Ocean | — | — |
+| ClimaSeaIce | Ocean | Ocean | Ocean | Ocean | Ocean | Ocean | Ocean | — | — |
+| CalibrateEmulateSample | DA/ML | DA/ML | DA/ML | DA/ML | DA/ML | DA/ML | DA/ML | — | — |
+| ClimaCoupler | Coupled ESM | Coupled ESM | Coupled ESM | SW | SW | SW | SW | Coupled ESM | Coupled ESM |
+| ClimaCalibrate | DA/ML | DA/ML | DA/ML | DA/ML | DA/ML | DA/ML | DA/ML | — | — |
