@@ -36,6 +36,47 @@ Match the JuliaFormatter version used in CI to prevent unnecessary diff churn. R
 
 Note: the JuliaFormatter major version is not uniform across CliMA repos — some pin `'1'`, others `'2'`, and some leave the default. Always cross-check `.github/workflows/JuliaFormatter.yml` (or `julia_formatter.yml`) in the repo you're working in before formatting. Run the formatter with `julia -e 'using JuliaFormatter; format(".")'` from the repo root.
 
+### Pre-commit hooks with prek
+
+If you want formatter checks to run automatically on commit, you can follow the
+same general pattern used in ClimaAtmos.jl:
+
+- add a `.pre-commit-config.yaml` at repo root,
+- optionally use a dedicated formatter environment (for example `.dev/format/`),
+- keep your CI formatter check and local hook behavior aligned.
+
+Use [`prek`](https://prek.j178.dev) to manage hooks:
+
+```sh
+# Install uv (https://docs.astral.sh/uv/getting-started/installation/)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Install prek
+uv tool install prek
+
+# From your repo root: install git hooks once
+prek install
+```
+
+After that, hooks run automatically on each `git commit` (staged files).
+
+For manual runs:
+
+- `prek run` checks the files selected by normal hook matching.
+- `prek run --all-files` checks the whole repository.
+
+Use this when you want a full-repo sweep:
+
+```sh
+prek run --all-files
+```
+
+`pre-commit` also works if you already use it; `prek` is a drop-in replacement.
+
+> [!NOTE]
+> If a hook reformats staged files, the commit is aborted and files are left
+> modified on disk. Review, `git add`, and commit again.
+
 ### Avoiding formatting noise
 
 Do not manually format code inconsistently with the formatter. If the formatter produces unwanted results, adjust `.JuliaFormatter.toml` rather than overriding manually.
