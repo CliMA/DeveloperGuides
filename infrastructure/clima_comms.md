@@ -14,7 +14,7 @@ context = ClimaComms.context(device)   # SingletonCommsContext, or MPICommsConte
 ClimaComms.init(context)               # required before any collective; no-op for singleton contexts
 ```
 
-ClimaComms's MPI backend loads as a package extension triggered by `using MPI`; single-process runs do not require it. Pick up `device` and `context` once at the top of your entry point and propagate them — do not recreate them inside library functions.
+ClimaComms's MPI backend loads as a package extension triggered by `using MPI`; single-process runs do not require it. Pick up `device` and `context` once at the top of your entry point and propagate them; do not recreate them inside library functions.
 
 ## 2. Device-agnostic code
 
@@ -37,7 +37,7 @@ buffer = ArrayType{FT}(undef, n)
 
 ### Move data to host only behind a clear guard
 
-Do not silently call `Array(field)` on a GPU field to peek at values; this triggers a host transfer that is invisible to readers and breaks performance. Use it only inside diagnostics or test code where the cost is acceptable, and document why. The same applies to scalar indexing (`field[i]`), which requires `CUDA.@allowscalar` on a GPU array — wrap the call so the cost is visible.
+Do not silently call `Array(field)` on a GPU field to peek at values; this triggers a host transfer that is invisible to readers and breaks performance. Use it only inside diagnostics or test code where the cost is acceptable, and document why. The same applies to scalar indexing (`field[i]`), which requires `CUDA.@allowscalar` on a GPU array; wrap the call so the cost is visible.
 
 ### `CUDA.allowscalar(false)` in tests
 
@@ -52,7 +52,7 @@ This is the standard pattern in `test/runtests_gpu.jl` across CliMA packages. Se
 
 ## 3. MPI / distributed code
 
-In a single-process (non-MPI) context, `ClimaComms.iamroot(context)` returns `true` and the collective operations (`barrier`, `allreduce`, `bcast`) are no-ops. The patterns below are therefore safe to write unconditionally — the rank-aware guards only matter when MPI is active.
+In a single-process (non-MPI) context, `ClimaComms.iamroot(context)` returns `true` and the collective operations (`barrier`, `allreduce`, `bcast`) are no-ops. The patterns below are therefore safe to write unconditionally; the rank-aware guards only matter when MPI is active.
 
 ### Root-only IO
 

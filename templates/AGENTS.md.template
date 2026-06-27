@@ -21,7 +21,7 @@ Edits to shared guidelines belong in [CliMA/DeveloperGuides](https://github.com/
 
 <!-- Replace the path below with your repo-specific guide location. -->
 
-- [docs/REPO_NAME_specific.md](docs/REPO_NAME_specific.md) — directory layout, key abstractions, test groups, and conventions specific to this package.
+- [docs/REPO_NAME_specific.md](docs/REPO_NAME_specific.md): directory layout, key abstractions, test groups, and conventions specific to this package.
 
 ## Self-correction
 

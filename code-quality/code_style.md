@@ -34,7 +34,7 @@ Match the JuliaFormatter version used in CI to prevent unnecessary diff churn. R
     version: '1'   # JuliaFormatter major version; check the repo's workflow file
 ```
 
-Note: the JuliaFormatter major version is not uniform across CliMA repos — some pin `'1'`, others `'2'`, and some leave the default. Always cross-check `.github/workflows/JuliaFormatter.yml` (or `julia_formatter.yml`) in the repo you're working in before formatting. Run the formatter with `julia -e 'using JuliaFormatter; format(".")'` from the repo root.
+Note: the JuliaFormatter major version is not uniform across CliMA repos. Some pin `'1'`, others `'2'`, and some leave the default. Always cross-check `.github/workflows/JuliaFormatter.yml` (or `julia_formatter.yml`) in the repo you're working in before formatting. Run the formatter with `julia -e 'using JuliaFormatter; format(".")'` from the repo root.
 
 ### Pre-commit hooks with prek
 
@@ -81,7 +81,7 @@ prek run --all-files
 
 Do not manually format code inconsistently with the formatter. If the formatter produces unwanted results, adjust `.JuliaFormatter.toml` rather than overriding manually.
 
-Be cautious with `git checkout -- .` to undo formatting changes — this also undoes any uncommitted functional changes. Prefer `git checkout -p` or `git add -i` for selective staging.
+Be cautious with `git checkout -- .` to undo formatting changes; this also undoes any uncommitted functional changes. Prefer `git checkout -p` or `git add -i` for selective staging.
 
 ## 2. Variable locality
 
@@ -119,7 +119,7 @@ The `test/` directory structure should mirror `src/`:
 - Modules, structs, and types use `TitleCase`.
 - Functions and variables use `snake_case` (lowercase, words separated by underscores).
 - Constants use `SCREAMING_SNAKE_CASE`.
-- Functions that mutate one of their arguments (conventionally the first) end in `!` — e.g. `update!`, `compute_tendency!`.
+- Functions that mutate one of their arguments (conventionally the first) end in `!`, e.g. `update!`, `compute_tendency!`.
 
 ### Function names
 
@@ -135,12 +135,12 @@ The `test/` directory structure should mirror `src/`:
   - `…Method` / `…Algorithm`: algorithmic choice (e.g. `JacobianAlgorithm`, `TracerNonnegativityMethod`).
   - `…Parameters` or `…Params`: immutable bag of numerical parameters (e.g. `ThermodynamicsParameters`).
   - `…Cache`: mutable workspace or precomputed state (e.g. `AtmosCache`).
-- **Avoid generic `…Type` or `…Helper` suffixes** — they don't tell the reader what kind of thing they are looking at.
+- **Avoid generic `…Type` or `…Helper` suffixes**: they don't tell the reader what kind of thing they are looking at.
 
 ### Variables
 
 - Follow the conventions in the [Variable List](variable_list.md).
-- Avoid one-character names like `l` (lowercase el), `O` (uppercase oh), or `I` (uppercase eye) — they are visually ambiguous.
+- Avoid one-character names like `l` (lowercase el), `O` (uppercase oh), or `I` (uppercase eye); they are visually ambiguous.
 - One-letter names from physics/math (`T`, `ρ`, `χ`, `Φ`) are fine when they match standard notation in the surrounding code.
 
 ### Unicode
