@@ -1,6 +1,6 @@
 # Running a CliMA Model on GPU
 
-This guide takes you from a fresh machine to a CliMA model that executes its kernels on an NVIDIA GPU. It is the canonical reference; link here rather than repeating the steps.
+This guide takes you from a fresh machine to a CliMA model that executes its kernels on an NVIDIA GPU. 
 
 This is a *run-the-model* guide. For writing GPU-compatible code (kernels, broadcasts, `isbits`), see [gpu_performance.md](../performance/gpu_performance.md); for the device-agnostic and MPI patterns used inside library code, see [clima_comms.md](../infrastructure/clima_comms.md).
 
