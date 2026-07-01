@@ -72,8 +72,9 @@ git subtree pull --prefix docs/dev-guides \
 > [!NOTE]
 > **Subtree pitfalls.**
 >
-> - DeveloperGuides ships its own `AGENTS.md`, `LICENSE`, and `README.md` at the repo root, which conflict with the consumer's own root files during `git subtree add`. Resolve by keeping the consumer's versions: `git checkout --ours AGENTS.md LICENSE README.md && git add … && git rebase --continue`.
-> - `git subtree pull` exits with an error when there are no new commits upstream. In an automated workflow, append `|| true` so the step does not fail on months with no DeveloperGuides changes.
+> - `git subtree add --prefix docs/dev-guides ...` nests all of DeveloperGuides, including its own `AGENTS.md`, `LICENSE`, and `README.md`, under that prefix. It does not touch the consumer's root files, so the initial add does not conflict with them.
+> - The real risk is editing the vendored copy under `docs/dev-guides/` directly instead of upstream (see "Contributing" below). A later `git subtree pull` merges upstream changes into that path, so a local edit there can produce a genuine merge conflict. Resolve it like any merge conflict: fix the conflicting file, `git add`, `git commit`. Subtree operations use merge, not rebase, so `git rebase --continue` does not apply.
+> - `git subtree pull` exits cleanly (status 0) when there are no new commits upstream; it does not error. The `|| true` in `update_dev_guides.yml.template` is defensive only.
 
 ### Contributing
 

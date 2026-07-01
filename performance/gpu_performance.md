@@ -169,7 +169,7 @@ Transcendental functions dominate the cost of many physics kernels (size distrib
 **Underlying principle**: the cost of `x^y` depends entirely on the *type of the exponent*.
 
 - **Floating-point exponent** (`x^y`, `x^2.0f0`, `x^0.5f0`): computed as roughly `exp(y * log(x))`, two transcendentals plus special-case handling. Expensive.
-- **Integer-literal exponent** (`x^2`, `x^3`, `x^-2`): dispatches to `Base.literal_pow`, which is plain multiplies and reciprocals (`x*x`, `inv(x*x)`). No transcendental. Cheap.
+- **Integer-literal exponent** (`x^2`, `x^3`): non-negative integer literals dispatch to `Base.literal_pow`, which is plain multiplies (`x*x`, `x*x*x`). Negative integer literals (`x^-2`) take the general integer-exponent path (`inv` + multiplies), which is equally cheap. No transcendental either way.
 - **Rational-literal exponent** (`x^(2//3)`): the worst case on GPU. It is not reliably constant-folded by the GPU compiler. When it is not folded, each thread constructs a 16-byte `Rational{Int64}` and runs a 64-bit integer `gcd` (with overflow checks) to normalize it *before the power is even computed*. 64-bit integer division is emulated on the GPU and the `gcd` loop diverges. Even in the best case where it does fold, it still reduces to a floating-point `pow`.
 
 `sqrt` and `cbrt` map to dedicated, much cheaper routines than `pow`, so express fractional powers through them.
@@ -184,7 +184,7 @@ The rules:
 | Instead of | Write |
 |---|---|
 | `x^(1//2)`, `x^0.5f0` | `sqrt(x)` |
-| `x^(3//2)` | `x * sqrt(x)` |
+| `x^(3//2)` | `x * sqrt(x)` (one multiply; `sqrt(x)^3` would be two) |
 | `x^(1//3)` | `cbrt(x)` |
 | `x^(2//3)` | `cbrt(x)^2` |
 | `x^(-2//3)` | `cbrt(x)^(-2)` |
@@ -198,7 +198,14 @@ v = a * D^(2//3)
 v = a * cbrt(D)^2
 ```
 
-A constant fractional power of compile-time parameters is best precomputed once, on the host, into a parameter or constructor field so it never appears in the kernel at all. See [Type Stability Guide](type_stability.md) for the related promotion concerns, and [Numerical Robustness §1–2](numerical_robustness.md) for guarding `sqrt` of a possibly-negative argument (`cbrt` accepts negatives, `sqrt` does not).
+A constant fractional power of compile-time parameters is best precomputed once, on the host, into a parameter or constructor field so it never appears in the kernel at all. Note the Float32 hazard: `Rational{Int64}` is a 64-bit type, so `x::Float32 ^ (2//3)` promotes the result to `Float64`, breaking Float32 kernels (see [type_stability.md §1](type_stability.md) for the general Float32-pollution checklist). See [Numerical Robustness §1–2](numerical_robustness.md) for guarding `sqrt` of a possibly-negative argument (`cbrt` accepts negatives, `sqrt` does not).
+
+## 11. Other patterns worth checking
+
+Two further patterns are not yet documented in depth here; worth considering when looking for more performance:
+
+- **Deduplicating a repeated pure computation across sibling functions.** If several functions each recompute the same expensive quantity from the same inputs, consider computing it once and threading it through as a default-valued optional argument, rather than duplicating the computation and relying on the compiler to CSE it across function-call boundaries (not guaranteed).
+- **Reducing quadrature order (or other numerical-integration resolution).** Beyond the fixed-iteration-count guidance for solvers in [Branchless Code Guide §§4–5](branchless_code.md), a quadrature-order reduction needs its own offline convergence study, and should be checked against integrand smoothness: a cusp or kink can cap achievable accuracy independent of node count.
 
 ## Self-correction
 

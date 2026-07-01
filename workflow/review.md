@@ -4,12 +4,19 @@ You are reviewing PRs for a CliMA package.
 
 The output stays concise, evidence-based, and findings-first: concrete bugs, regressions, and missing validation, ordered by impact. Do not write broad architecture summaries. Concise output does not mean shallow analysis, though. Every review must do the deep work below, especially the mathematical, physical, and performance-guideline checks, even though only the resulting findings appear in the report.
 
-## Two passes every review must include
+## Review workflow
 
 Two passes are mandatory on every PR, no matter how small or how "obviously correct" the change looks. A review that skips either one is incomplete:
 
 1. **Mathematical and physical correctness and consistency** (section 1). Check every mathematical relation in the changed code and in its documentation, and confirm that code and docs agree.
 2. **Conformance to the performance guides** (section 2). Check the changed hot-path and kernel code against the specific written performance rules, not by general impression.
+
+Work in this order:
+
+1. Read the changed files first, then step to the nearest controlling compute paths only when needed to confirm behavior or risk.
+2. Run the two mandatory passes: mathematical and physical correctness and consistency (section 1), then conformance to the performance guides (section 2).
+3. Use local evidence: changed code, nearby tests, call sites, docs, and config usage. Where a mathematical or codegen claim is in doubt, generate the evidence: derive the relation, check equivalence numerically, or inspect `@code_typed`/`@code_llvm`/`@allocated`.
+4. Report only evidence-backed findings or clearly labeled risks and open questions.
 
 ## 1. Mathematical and physical correctness and consistency (mandatory, in depth)
 
@@ -45,7 +52,7 @@ Check the changed hot-path and kernel code (both defined in [gpu_performance.md]
 - [ ] **Elementary-function cost**: `pow` from a floating-point exponent, rational-literal exponents (`x^(2//3)`, which construct a `Rational{Int64}` and run a 64-bit `gcd` per thread on the GPU), float-literal exponents (`x^2.0`), and repeated transcendentals inside an integrand. Fractional powers should use `sqrt`/`cbrt` with integer-literal powers, and constant powers should be precomputed once on the host. See [gpu_performance.md §10](../performance/gpu_performance.md).
 - [ ] **Numerical robustness in kernels**: `log`, `sqrt`, and division guarded *before* an `ifelse` (both arms always evaluate), with the correct floor (not a blind `eps(FT)`). See [numerical_robustness.md](../performance/numerical_robustness.md) and [gpu_performance.md §1](../performance/gpu_performance.md).
 - [ ] **Type stability and Float32**: unwrapped `Float64` literals (`1.0`, `Inf`), integers or `Rational`s in a Float32 path, and any promotion that pulls a Float32 kernel into Float64. See [type_stability.md](../performance/type_stability.md) and SDP 15 and 16.
-- [ ] **Allocations and kernel safety**: a new `Field` allocated inside a tendency or cache setter, a non-`isbits`-after-adapt kernel argument, a closure where a functor is required, keyword arguments inside a kernel, and `Dict`/`String`/`@assert` in kernels. See [allocation_debugging.md](../performance/allocation_debugging.md), [gpu_performance.md §2 and §8](../performance/gpu_performance.md), and SDP 11, 13, 18, 20, 21.
+- [ ] **Allocations and kernel safety**: a new `Field` allocated inside a tendency or cache setter, a non-`isbits`-after-adapt kernel argument, a closure where a functor is required (flag closures passed to `integrate`, `quadrature`, or `bycolumn` calls), keyword arguments inside a kernel, and `Dict`/`String`/`@assert` in kernels. See [allocation_debugging.md](../performance/allocation_debugging.md), [gpu_performance.md §2 and §8](../performance/gpu_performance.md), and SDP 11, 13, 18, 20, 21.
 - [ ] **AD compatibility**: a new `where {FT}` on a non-constructor physics function, or a floating-point type taken from a `where` clause instead of inferred from values. See [ad_compatibility.md](../performance/ad_compatibility.md) and SDP 14 and 15.
 - [ ] **Confirm claimed optimizations with evidence.** When a PR claims a codegen property (no `pow`, no `Rational`, no allocation, type stable, faster), verify it: `@code_typed`/`@code_llvm`/`@code_warntype` for the claim, `@allocated` for allocations, and run the affected benchmark or test. A claim in the PR description is not evidence.
 
@@ -68,15 +75,6 @@ Check the changed hot-path and kernel code (both defined in [gpu_performance.md]
 - [ ] Flag misleading or colliding names: a variable or field that reuses an established name in the package for an unrelated quantity (a recent review caught a ventilation exponent field named `β_va`, the established name of the mass-dimension exponent). Names must not mislead a future reader.
 - [ ] Check formatting against the repo's `.JuliaFormatter.toml` and contributor guide ([code_style.md](../code-quality/code_style.md)).
 - [ ] Avoid low-signal style commentary unless it hides or causes a real issue.
-
-## Review workflow
-
-Work in this order:
-
-1. Read the changed files first, then step to the nearest controlling compute paths only when needed to confirm behavior or risk.
-2. Run the two mandatory passes: mathematical and physical correctness and consistency (section 1), then conformance to the performance guides (section 2).
-3. Use local evidence: changed code, nearby tests, call sites, docs, and config usage. Where a mathematical or codegen claim is in doubt, generate the evidence: derive the relation, check equivalence numerically, or inspect `@code_typed`/`@code_llvm`/`@allocated`.
-4. Report only evidence-backed findings or clearly labeled risks and open questions.
 
 ## Output schema (must follow)
 
