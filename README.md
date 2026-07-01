@@ -69,12 +69,46 @@ git subtree pull --prefix docs/dev-guides \
     -m "chore: sync dev guides from central repo"
 ```
 
+> [!CAUTION]
+> **Two mistakes break the automated monthly sync. Both have bitten us.**
+>
+> - **Always merge dev-guides PRs with a _merge commit_ — never squash-merge.** This applies to the initial `subtree add` PR and to every monthly sync PR. Squash-merging flattens the two-parent subtree commit and discards the `git-subtree-split` metadata, so the next `git subtree pull` fails with `fatal: can't squash-merge: 'docs/dev-guides' was never added.` Recovery requires removing and re-adding the subtree (see below and the [`templates/update_dev_guides.yml.template`](templates/update_dev_guides.yml.template) header).
+> - **The sync workflow needs write permissions.** `.github/workflows/update_dev_guides.yml` must carry a `permissions:` block (`contents: write`, `pull-requests: write`) **and** the repo must have Settings → Actions → General → "Allow GitHub Actions to create and approve pull requests" enabled. Without both, the run fails when it tries to open the PR. The current [template](templates/update_dev_guides.yml.template) already includes the block; older copies do not.
+>
+> Affected a repo? See [Fixing a broken subtree sync](#fixing-a-broken-subtree-sync).
+
 > [!NOTE]
-> **Subtree pitfalls.**
+> **Other subtree pitfalls.**
 >
 > - `git subtree add --prefix docs/dev-guides ...` nests all of DeveloperGuides, including its own `AGENTS.md`, `LICENSE`, and `README.md`, under that prefix. It does not touch the consumer's root files, so the initial add does not conflict with them.
 > - The real risk is editing the vendored copy under `docs/dev-guides/` directly instead of upstream (see "Contributing" below). A later `git subtree pull` merges upstream changes into that path, so a local edit there can produce a genuine merge conflict. Resolve it like any merge conflict: fix the conflicting file, `git add`, `git commit`. Subtree operations use merge, not rebase, so `git rebase --continue` does not apply.
-> - `git subtree pull` exits cleanly (status 0) when there are no new commits upstream; it does not error. The `|| true` in `update_dev_guides.yml.template` is defensive only.
+> - When there are no new upstream commits the monthly run is a clean no-op. The workflow now fails loudly on a genuine `git subtree pull` error instead of masking it, so a red run means something actually needs attention.
+
+### Fixing a broken subtree sync
+
+If a repo's monthly sync stopped producing PRs, apply whichever of these two fixes it needs. Most repos only need the first.
+
+**1. Update the workflow file (do this on every consumer repo).** Replace the old workflow with the current template rather than hand-editing it:
+
+```bash
+mkdir -p .github/workflows
+curl -fsSL https://raw.githubusercontent.com/CliMA/DeveloperGuides/main/templates/update_dev_guides.yml.template \
+    -o .github/workflows/update_dev_guides.yml
+```
+
+Then, in the repo's **Settings → Actions → General**, enable **"Allow GitHub Actions to create and approve pull requests."** Commit the workflow on a branch, open a PR, and merge it normally (this PR does not touch the subtree, so squash is fine).
+
+**2. Repair broken subtree metadata (only if a sync PR was ever squash-merged).** Symptom: a manual `git subtree pull` (or the workflow log) fails with `fatal: can't squash-merge: 'docs/dev-guides' was never added.` Remove and re-add the subtree:
+
+```bash
+git checkout -b fix-dev-guides-subtree
+git rm -r docs/dev-guides
+git commit -m "chore: remove dev-guides subtree (re-adding to fix metadata)"
+git subtree add --prefix docs/dev-guides \
+    https://github.com/CliMA/DeveloperGuides.git main --squash
+```
+
+Open a PR for this branch and **merge it with a merge commit, not squash** — squash-merging here immediately re-breaks the metadata. Any local edits to files under `docs/dev-guides/` are discarded, which is correct: that copy is vendored and should only be changed upstream.
 
 ### Contributing
 
