@@ -162,6 +162,44 @@ Avoid using `DataTypes` (e.g. `Float64`) or their aliases (e.g `FT`) directly in
 
 After implementing or modifying hot-path code, verify zero allocations with the warm-up + `@allocated == 0` regression-test pattern documented in [allocation_debugging.md §1](allocation_debugging.md). Allocation benchmarks in `perf/` are not run automatically in CI, so allocation regressions must be caught at review time.
 
+## 10. Elementary functions: exponents and roots
+
+Transcendental functions dominate the cost of many physics kernels (size distributions, terminal velocities), and the general power operator `x^y` is one of the most expensive. Choosing the right form for a fractional power is frequently a several-fold kernel speedup: removing rational exponents alone gave a ~7x speedup in a CloudMicrophysics 2-moment kernel.
+
+**Underlying principle**: the cost of `x^y` depends entirely on the *type of the exponent*.
+
+- **Floating-point exponent** (`x^y`, `x^2.0f0`, `x^0.5f0`): computed as roughly `exp(y * log(x))`, two transcendentals plus special-case handling. Expensive.
+- **Integer-literal exponent** (`x^2`, `x^3`, `x^-2`): dispatches to `Base.literal_pow`, which is plain multiplies and reciprocals (`x*x`, `inv(x*x)`). No transcendental. Cheap.
+- **Rational-literal exponent** (`x^(2//3)`): the worst case on GPU. It is not reliably constant-folded by the GPU compiler. When it is not folded, each thread constructs a 16-byte `Rational{Int64}` and runs a 64-bit integer `gcd` (with overflow checks) to normalize it *before the power is even computed*. 64-bit integer division is emulated on the GPU and the `gcd` loop diverges. Even in the best case where it does fold, it still reduces to a floating-point `pow`.
+
+`sqrt` and `cbrt` map to dedicated, much cheaper routines than `pow`, so express fractional powers through them.
+
+The rules:
+
+1. **Never put a `Rational` literal in an exponent inside a kernel.** Not `x^(2//3)`, not `x^(-1//2)`, not `x^(3//2)`.
+2. **Rewrite a fractional power as a root composed with an integer-literal power:** `x^(p//q) == root_q(x)^p`, using `sqrt` for `q = 2` and `cbrt` for `q = 3`, with an integer *literal* for `p`.
+3. **Take the root first.** Prefer `cbrt(x)^2` over `cbrt(x^2)`: doing the root first keeps the intermediate in range. For large or small `x`, squaring first can overflow or underflow to `0`/`Inf` where the root-first form is still correct. (Square-first is marginally more accurate and is acceptable only for moderate compile-time constants where overflow is impossible.)
+4. **The exponent must be a literal, not a variable.** Only a written literal hits `literal_pow`; a *float* literal such as `x^2.0f0` is a `pow`, so write `x^2`. If a moment order or similar must be a variable, make it an `Int`, never a `Rational`.
+
+| Instead of | Write |
+|---|---|
+| `x^(1//2)`, `x^0.5f0` | `sqrt(x)` |
+| `x^(3//2)` | `x * sqrt(x)` |
+| `x^(1//3)` | `cbrt(x)` |
+| `x^(2//3)` | `cbrt(x)^2` |
+| `x^(-2//3)` | `cbrt(x)^(-2)` |
+| `x^(1//6)` | `cbrt(sqrt(x))` |
+
+```julia
+# ❌ Bad: rational exponent -> Rational{Int64} + 64-bit gcd per thread, then a pow
+v = a * D^(2//3)
+
+# ✅ Preferred: one hardware cbrt plus an integer-literal square (literal_pow)
+v = a * cbrt(D)^2
+```
+
+A constant fractional power of compile-time parameters is best precomputed once, on the host, into a parameter or constructor field so it never appears in the kernel at all. See [Type Stability Guide](type_stability.md) for the related promotion concerns, and [Numerical Robustness §1–2](numerical_robustness.md) for guarding `sqrt` of a possibly-negative argument (`cbrt` accepts negatives, `sqrt` does not).
+
 ## Self-correction
 
 If this guide is discovered to be stale or missing a pattern, update it.
