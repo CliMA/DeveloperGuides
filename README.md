@@ -69,16 +69,8 @@ git subtree pull --prefix docs/dev-guides \
     -m "chore: sync dev guides from central repo"
 ```
 
-> [!CAUTION]
-> **Two mistakes break the automated monthly sync. Both have bitten us.**
->
-> - **Always merge dev-guides PRs with a _merge commit_ — never squash-merge.** This applies to the initial `subtree add` PR and to every monthly sync PR. Squash-merging flattens the two-parent subtree commit and discards the `git-subtree-split` metadata, so the next `git subtree pull` fails with `fatal: can't squash-merge: 'docs/dev-guides' was never added.` Recovery requires removing and re-adding the subtree (see below and the [`templates/update_dev_guides.yml.template`](templates/update_dev_guides.yml.template) header).
-> - **The sync workflow needs write permissions.** `.github/workflows/update_dev_guides.yml` must carry a `permissions:` block (`contents: write`, `pull-requests: write`) **and** the repo must have Settings → Actions → General → "Allow GitHub Actions to create and approve pull requests" enabled. Without both, the run fails when it tries to open the PR. The current [template](templates/update_dev_guides.yml.template) already includes the block; older copies do not.
->
-> Affected a repo? See [Fixing a broken subtree sync](#fixing-a-broken-subtree-sync).
-
 > [!NOTE]
-> **Other subtree pitfalls.**
+> **Subtree pitfalls.**
 >
 > - `git subtree add --prefix docs/dev-guides ...` nests all of DeveloperGuides, including its own `AGENTS.md`, `LICENSE`, and `README.md`, under that prefix. It does not touch the consumer's root files, so the initial add does not conflict with them.
 > - The real risk is editing the vendored copy under `docs/dev-guides/` directly instead of upstream (see "Contributing" below). A later `git subtree pull` merges upstream changes into that path, so a local edit there can produce a genuine merge conflict. Resolve it like any merge conflict: fix the conflicting file, `git add`, `git commit`. Subtree operations use merge, not rebase, so `git rebase --continue` does not apply.
@@ -86,7 +78,7 @@ git subtree pull --prefix docs/dev-guides \
 
 ### Fixing a broken subtree sync
 
-If a repo's monthly sync stopped producing PRs, apply whichever of these two fixes it needs. Most repos only need the first.
+The monthly sync breaks in one of two ways: a dev-guides PR was squash-merged — which discards the `git subtree` metadata the next pull relies on — or the workflow lacks the write permissions it needs to open a PR. If a repo's sync stopped producing PRs, apply whichever fix below it needs; most repos only need the first.
 
 **1. Update the workflow file (do this on every consumer repo).** Replace the old workflow with the current template rather than hand-editing it:
 
