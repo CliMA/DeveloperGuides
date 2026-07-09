@@ -46,6 +46,7 @@ Every guide applies across the CliMA ecosystem unless it says otherwise.
 - [debugging.md](workflow/debugging.md): interactive debugging recipes for numerical instabilities, dispatch, and `Field` plotting.
 - [review.md](workflow/review.md): PR review instructions and checklist.
 - [ci_triage.md](workflow/ci_triage.md): checklist for "passes locally, fails on CI" failure modes.
+- [buildkite_access.md](workflow/buildkite_access.md): authenticated Buildkite access for AI coding tools (SSO, token scopes, MCP server setup).
 - [cross_repo_issue_pr_search.md](workflow/cross_repo_issue_pr_search.md): org-scoped GitHub search to find and filter issues/PRs across CliMA.
 
 ---
