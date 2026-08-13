@@ -54,7 +54,7 @@ The README is the first thing most users and agents see. Keep it short and curre
 8. **Integration with CliMA models**: which ecosystem packages this one uses or is used by, with links.
 9. **Contributing**: point at `docs/dev-guides/` and the repo's `AGENTS.md`.
 
-**The Quick Example must actually run.** Execute it against the repo environment before committing it, or lift it verbatim from a doctested page (a Documenter `@example` block runs on every docs build). A README snippet that only *looks* right is worse than none: it is the first thing a new user pastes into a REPL. Verify the comments too — a snippet that runs but whose comment misstates the result is still wrong. When a snippet is copied from a docs page, prefer copying it verbatim so the two cannot drift.
+**Run the Quick Example before committing it.** Execute it against the repo environment, or lift it verbatim from a doctested page (a Documenter `@example` block runs on every docs build). A README snippet that only *looks* right is worse than none: it is the first thing a new user pastes into a REPL. Verify the comments too — a snippet that runs but whose comment misstates the result is still wrong. When a snippet is copied from a docs page, prefer copying it verbatim so the two cannot drift.
 
 **Badge table.** Use reference-style link definitions, keep the label column right-aligned and the badge column left-aligned, and place the definitions immediately below the table:
 
@@ -113,7 +113,7 @@ Both are required: pinning a badge to `main` for a workflow that never runs ther
 | `NOTICE` | Present, mirroring the `LICENSE` copyright line | Not used |
 | Badge | `license-Apache%202.0-blue` | `license-MIT-blue` |
 
-**Copyright notice.** The Apache boilerplate ships with a placeholder that is easy to leave unfilled:
+**Copyright notice.** The Apache boilerplate ships with a placeholder that often gets committed unfilled:
 
 ~~~text
 Copyright [yyyy] [name of copyright owner]

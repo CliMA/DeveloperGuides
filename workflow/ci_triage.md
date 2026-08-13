@@ -81,7 +81,7 @@ Buildkite jobs on shared CliMA clusters use a per-pipeline Julia [depot](https:/
 
 Not every red badge is a broken build. Before chasing a failure, confirm the badge is reporting what you think it is. The badge conventions themselves are in [documentation_policy.md §2.3](../code-quality/documentation_policy.md).
 
-- **GitHub Actions badge reads `failing` while `main` is green.** The badge has no `?branch=main` filter, so it shows the workflow's most recent run on *any* branch — typically a failing PR. Pin the badge, and check the workflow actually has a `push: branches: [main]` trigger; without one there is no `main` run to report.
+- **GitHub Actions badge reads `failing` while `main` is green.** The badge has no `?branch=main` filter, so it shows the workflow's most recent run on *any* branch — typically a failing PR. Pin the badge, and check that the workflow has a `push: branches: [main]` trigger; without one there is no `main` run to report.
 - **GitHub Actions badge reads `no status`.** The badge is pinned to `main` but the workflow only triggers on `pull_request`. Add the push trigger; the first merge after that populates it.
 - **The last `main` run was `cancelled`.** GitHub renders a cancelled conclusion as `failing`. Repos set `concurrency: cancel-in-progress: true` keyed on the ref, so two pushes to `main` in quick succession cancel the first run — expected behavior, not a failure. Re-run it or wait for the next push.
 - **Buildkite badge reads `unknown`.** The `?branch=main` filter found no builds because that pipeline only builds PR branches. Either enable `main` builds in the Buildkite pipeline settings or drop the badge; do not leave a permanent `unknown`.
