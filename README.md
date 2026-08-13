@@ -27,6 +27,7 @@ Every guide applies across the CliMA ecosystem unless it says otherwise.
 
 - [getting_started.md](code-quality/getting_started.md): orienting newcomers to writing pointwise code compatible with ClimaCore `Field`s and broadcasting.
 - [code_style.md](code-quality/code_style.md): formatting, variable locality, Git workflow, feature removal, naming conventions.
+- [code_comments.md](code-quality/code_comments.md): what earns a comment, never describing a previous state, words to cut, sweeping a branch.
 - [documentation_policy.md](code-quality/documentation_policy.md): docstrings, repository-level docs, README and badge conventions, LICENSE/NOTICE and copyright notices, minimally viable documentation.
 - [changelogs_and_versions.md](code-quality/changelogs_and_versions.md): `NEWS.md` format, SemVer rules, and the release/tagging flow.
 - [variable_list.md](code-quality/variable_list.md): standardized CliMA variable naming conventions.

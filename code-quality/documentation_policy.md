@@ -9,6 +9,8 @@ CliMA is committed to producing high-quality, well-documented software so that k
 - **Do** document interfaces, expected behavior, and short examples.
 - **Do not** narrate what the code does line by line; the code itself should be self-explanatory.
 
+This guide covers docstrings and repository-level documentation. For the `#` comments beside the code — what earns one, and the defects to sweep for — see [code_comments.md](code_comments.md).
+
 ## 2. Repository documentation
 
 Every repository must include the following pages (typically under `docs/src/` or in `README.md`):

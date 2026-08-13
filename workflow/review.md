@@ -33,6 +33,7 @@ This is the heart of a CliMA review. Code can be clean, allocation-free, and GPU
 
 - [ ] Treat docstrings, code comments, and LaTeX/Documenter math as part of the artifact under review. Every relation they state must match the code **exactly**.
 - [ ] Flag as findings: a docstring formula that no longer matches the implementation, a comment describing a previous implementation, a field docstring whose "pre-computed ..." description disagrees with the constructor, an `@ref`/`@docs` pointing at a renamed or removed symbol, and units or symbol definitions that have drifted from the code. A doc/code inconsistency is a finding even when the code itself is correct. See [documentation_policy.md](../code-quality/documentation_policy.md).
+- [ ] Flag comments that describe a **previous state** of the code ("this used to ...", "previously ...", "no longer ..."): the history belongs in the commit message, and the comment reads as false to anyone without that context. Flag likewise a renamed symbol, flag, or test tier whose old name survives in a docstring, an example, or a CI config value — the last silently changes which jobs run. See [code_comments.md](../code-quality/code_comments.md).
 
 ### Physical reasoning
 
