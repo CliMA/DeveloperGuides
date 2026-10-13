@@ -51,22 +51,34 @@ A lazy expression can be identified by the use of the `lazy` function
 (e.g. `d = @. lazy(A + B)`).
 
 Note that lazy expressions involving Fields DO NOT WORK YET. If they are
-present, you need to switch from using Fields to DataLayouts. You can extract
-the DataLayout using the `field_values` function, e.g.:
+present, you need to either materialize the Fields or switch from using Fields
+to DataLayouts. You can extract the DataLayout using the `field_values`
+function, e.g.:
 
 ```julia
 A_data_layout = ClimaCore.Fields.field_values(A_field)
+```
+
+If you are instead materializing the Fields you may want to use the scratch
+entries in `p.scratch`, but check carefully that no function you call clashes
+with the entry you choose. E.g.:
+
+```julia
+A = (p.scratch.ᶜtemp_scalar .= A_lazy)
 ```
 
 ## Passing non DataLayout or Field arguments
 
 Julia sometimes wraps variables captured from the parent scope into a lambda
 into a `Ref` (this is called boxing). We need to avoid it, as it will lead to
-failures on a GPU. For that reason, if you need to use some other variable
-inside the closure, you need to wrap it into a `let` block. For example:
+failures on a GPU. This happens when a variable is reassigned anywhere in
+the surrounding function (including inside branches or loops, before or after
+the closure is defined). So either avoid reassigning variables that are used in
+the `foreach_point` closure or wrap them in a `let` block. For example:
 
 ```julia
 scalar = 3.0
+scalar = 2 * scalar  # reassignment
 let scalar = scalar
     foreach_point(A1, A, B, C, D) do A1, A, B, C, D
         @. A = B + C * D
@@ -242,7 +254,6 @@ foreach_point(res, a_field, b_field) do res, a, b
     @. res = c * 2      # persistent output, must be assigned with `@. res = ...`
 end
 ```
-
 
 ## General advice
 

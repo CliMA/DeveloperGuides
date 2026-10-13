@@ -46,12 +46,12 @@ Use it to:
 
   ```sh
   cd perf/run-and-time
-  julia --project -e 'using Pkg; Pkg.instantiate()'
+  julia --project=../../.buildkite -e 'using Pkg; Pkg.instantiate()'
   ```
 
-  The local `Project.toml` path-sources ClimaAtmos from the repo root
-  (`[sources] ClimaAtmos = {path = "../.."}`), so edits under `src/` are
-  measured immediately — no `dev` step needed.
+  The `.buildkite` environment path-sources ClimaAtmos from the repo root
+  (`[sources] ClimaAtmos = {path = ".."}` in `.buildkite/Project.toml`), so
+  edits under `src/` are measured immediately — no `dev` step needed.
 - Prefer Julia 1.11.x (repo norm).
 
 ## Choose a harness
