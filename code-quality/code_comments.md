@@ -8,7 +8,7 @@ Conventions for writing, editing, and reviewing inline comments, docstrings, and
 
 **A comment explains the code that is there, and why it is that way.** It is not a changelog, not a narrative of the work that produced it, and not a restatement of the line below it.
 
-Match the comment density and voice of the surrounding file rather than importing a different style. A new file dense with prose in a codebase whose neighbours are sparse is out of place, and the extra prose is almost always saying what the code already says.
+Match the comment density and voice of the surrounding file. A new file dense with prose in a codebase whose neighbours are sparse is out of place, and the extra prose is almost always saying what the code already says.
 
 A header on a new file is justified when it states what the file does or asserts and why that is the right thing to do or assert. Keep it to a few lines. It is not the place for:
 
@@ -18,7 +18,7 @@ A header on a new file is justified when it states what the file does or asserts
 
 ### 1.2 Failure modes worth documenting
 
-This is the exception that makes the rule useful. Document a hazard when a future developer could plausibly reintroduce it — but state it as a property of the current code, not as an incident report. Hazards worth a comment look like:
+Document a hazard when a future developer could plausibly reintroduce it — but state it as a property of the current code, not as an incident report. Hazards worth a comment look like:
 
 - `if: ${{ a }} && ${{ b }}` in GitHub Actions interpolates each `${{ }}` separately and leaves the string `"true && false"`, which is truthy either way, so the condition must be written as one expression.
 - `--check-bounds=yes` disables `@inbounds` elision, so zero-allocation sentinels report allocations that are not there.
@@ -32,7 +32,7 @@ Each states a constraint that is still true of the code as written, and each wou
 
 - **The formatter does not reflow comments.** JuliaFormatter leaves comment text alone, so rewrapping after an edit is manual: check line lengths yourself. Keep comments within the repo's margin (see [code_style.md §4](code_style.md)); wrapping narrower than the code margin is common and fine, as long as it is consistent within a file.
 - **No trailing whitespace.**
-- **Prefer the declarative to the imperative.** An imperative opener ("Split the branch outside the closure") reads as an instruction to change the code. Write what is true instead: "The branch is outside the closure so that ...".
+- **Prefer the declarative to the imperative.** An imperative opener ("Split the branch outside the closure") reads as an instruction to change the code. Write what is true: "The branch is outside the closure so that ...".
 - **In `#! format: off` blocks, alignment is manual.** Realign the whole column after editing any entry.
 
 ## 2. Prose style (comments, docstrings, and docs)
@@ -142,7 +142,7 @@ When reviewing or cleaning up a branch, work from the diff rather than by readin
 
 **Know which diff you are reading.** `git diff origin/main` reads the **working tree**; `git diff origin/main <branch>` reads the **committed tip**. Sweeping the wrong one silently reports stale results.
 
-**Scan every added line, not only `#` comments.** Docstrings and config values carry the same defects, and a comment-only filter never sees them. A stale value in a CI config is the dangerous case: it changes which jobs run without failing anything.
+**Scan every added line, not only `#` comments.** Docstrings and config values have the same defects, and a comment-only filter never sees them. A stale value in a CI config is the dangerous case (§3.2).
 
 ```bash
 git diff origin/main HEAD > /tmp/d.diff
@@ -165,7 +165,7 @@ Finish by checking that filenames cited in comments still exist — extract ever
 
 **Comments and prose go stale across branches, not just across time.** A comment or docstring that is accurate on one branch can be false on another that renames or deletes what it describes. When rebasing a stack, a conflict inside prose is a signal to check which branch's description is still true — not just to pick one.
 
-**Renaming a symbol, flag, or test tier strands its old name in prose and config.** The rename itself compiles and passes; the name survives in a docstring list, in an example, and in CI config values that select on it. Those config values then quietly select something different from what they used to — silently changing which tests run, with nothing failing to signal it. Before calling such a rename done, grep the old name across source, config, and docs, and confirm that any config value naming it still selects what it did before.
+**Renaming a symbol, flag, or test tier strands its old name in prose and config.** The rename itself compiles and passes; the name survives in a docstring list, in an example, and in CI config values that select on it. Those config values then select something different, changing which tests run with nothing failing to signal it. Before calling such a rename done, grep the old name across source, config, and docs, and confirm that any config value naming it still selects what it did before.
 
 ## Self-correction
 
