@@ -22,6 +22,25 @@ The loop:
 6. Repeat until CI is green or you reach a decision only the repository owner
    can make (Section 3).
 
+## 0. Autonomy
+
+This loop performs actions that
+[agent_autonomy.md](../../../workflow/agent_autonomy.md) gates behind user
+approval. Invoking the skill grants exactly one of them: pushing commits to the
+PR branch named in the request (never force-pushing, never to `main`). Ask
+before each of the others, every time:
+
+- editing `.buildkite/pipeline.yml` or `.github/workflows/*`, including a
+  temporary `soft_fail` diagnostic step (Section 2);
+- changing a stored baseline, tolerance threshold, golden file, or
+  reproducibility reference (Sections 3 and 5.7);
+- flipping `@test_broken`/`skip` markers or otherwise disabling a test
+  (Section 3);
+- editing `Manifest.toml`, `[compat]`, or adding `[deps]`.
+
+When asking, name the file, the change, and the evidence for it, so the user
+can approve in one reply.
+
 ## 1. Set up access to CI results before anything else
 
 - **GitHub Actions**: raw job logs require authentication. Check
@@ -65,7 +84,8 @@ The loop:
   pushes), never push while waiting on a diagnostic job's results.
 - For failures that only manifest on CI hardware (runtime GPU errors,
   segfaults), get a full answer in ONE round with a temporary diagnostic step
-  in `.buildkite/pipeline.yml` marked `soft_fail: true`: run each suspect case
+  in `.buildkite/pipeline.yml` marked `soft_fail: true` (a pipeline edit;
+  ask first, Section 0): run each suspect case
   via `Distributed.remotecall_eval` on a worker process, catch
   `ProcessExitedException`, respawn, and print a PASS/CRASH map. Remove
   temporary steps once the cause is fixed.
@@ -103,7 +123,8 @@ The loop:
     happen (constrain the `Vararg` method's leading arguments so that the
     signatures do not overlap, or split it by argument type).
 - When a test's expectation is wrong rather than the code (stale baselines,
-  `@test_broken` that now passes), update the expectation — but only flip
+  `@test_broken` that now passes), propose updating the expectation with the
+  evidence and wait for approval (Section 0) — flip only
   markers that pass in *every* invocation across at least two builds, and use
   `skip` instead of `broken` when the pass/fail set is unstable.
 
@@ -266,7 +287,8 @@ authoritative measurement of runtime performance:
 
 ### 5.7 Performance-baseline hygiene
 
-- When updating any stored perf baseline (latency thresholds, timing caps),
+- Updating a stored perf baseline (latency thresholds, timing caps) needs
+  approval (Section 0). When it is granted,
   record in the commit message which build/commit produced the new numbers
   AND how they compare to main. A baseline set mid-PR may have been measured
   on a state where the code path was not doing its full work — verify the

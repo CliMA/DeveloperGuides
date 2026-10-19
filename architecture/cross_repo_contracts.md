@@ -22,7 +22,7 @@ Treat anything not in the package's `docs/` as internal and unstable (see [archi
 - Pass the thermodynamics parameter container (e.g. `p.params.thermodynamics_params` in ClimaAtmos) into thermodynamic functions.
 - The public API is functional and stateless: functions take a parameter container and the relevant scalar arguments directly.
 - Many functions are dispatched on a *formulation type* that names the independent variables. The available formulations (subtypes of `IndepVars`) are `TD.ρe()`, `TD.pe()`, `TD.ph()`, `TD.pρ()`, `TD.pθ_li()`, `TD.ρθ_li()`. For example: `TD.air_temperature(thp, TD.ph(), h, q_tot, q_liq, q_ice)`.
-- For iterative phase-equilibrium calculations inside GPU kernels, prefer the fixed-iteration `saturation_adjustment` variants (the GPU default is a 2-iteration Newton solve with no convergence flag) to avoid thread divergence. See [SDP 19](../code-quality/software_design_patterns.md) and the [Branchless Code Guide §4–5](../performance/branchless_code.md).
+- For iterative phase-equilibrium calculations inside GPU kernels, prefer the fixed-iteration `saturation_adjustment` variants (the GPU default is a 2-iteration safeguarded Newton solve with no stopping test) to avoid thread divergence. See [SDP 19](../code-quality/software_design_patterns.md) and the [Branchless Code Guide §4–5](../performance/branchless_code.md).
 
 ## CloudMicrophysics.jl
 

@@ -254,7 +254,7 @@ Validation: `@allocated integrate(PhysicsEval(params, state), data)` should be 0
 
 Convergence-based loops (`while err > tol`, or `for ...; converged && break; end`) cause thread divergence when different threads converge at different rates: the warp runs until the slowest point finishes, and the early-exit `break` is itself a data-dependent branch. Where the physics allows it, use a fixed number of iterations.
 
-Choose the count by physical adequacy (e.g. temperature to ~0.1 K, not to `eps(FT)`) and validate it with an offline sweep of the conditions a climate run can produce; `Thermodynamics.saturation_adjustment` (a fixed `maxiter = 2` Newton solve, no convergence flag) is the canonical example. For the methodology, the offline-test checklist, and the worked example, see the [Branchless Code Guide §4–5](../performance/branchless_code.md).
+Choose the count by physical adequacy (e.g. temperature to ~0.1 K, not to `eps(FT)`) and validate it with an offline sweep of the conditions a climate run can produce; `Thermodynamics.saturation_adjustment` (a fixed `maxiter = 2` safeguarded Newton solve with no stopping test) is the canonical example. For the methodology, the offline-test checklist, and the worked example, see the [Branchless Code Guide §4–5](../performance/branchless_code.md).
 
 ## 20. Extract parameters and non-field scalars before `@.` blocks
 

@@ -124,22 +124,28 @@ end
 ```
 
 The canonical CliMA example is `Thermodynamics.saturation_adjustment`. Its
-GPU-default path, `saturation_adjustment_fixed_iters`, is a Newton loop
-with a fixed `maxiter = 2` and **no convergence flag** (it returns
-`converged = true` by construction), so nothing downstream branches on
-convergence either:
+GPU-default path, `saturation_adjustment_fixed_iters`, is a safeguarded Newton
+loop with a fixed `maxiter = 2` and **no stopping test**: every guard in it is
+an `ifelse`, `clamp`, or `max`, so every lane runs the same instructions. The
+`converged` flag it returns is computed after the loop from the size of the
+last Newton increment; it is a diagnostic, not a loop exit, and the convenience
+methods drop it:
 
 ```julia
-# Thermodynamics.jl/src/saturation_adjustment.jl (abridged)
+# Thermodynamics.jl v1.3 src/saturation_adjustment.jl (abridged)
 @inline function saturation_adjustment_fixed_iters(param_set, ::ρe, ρ, e_int, q_tot, maxiter)
-    T = max(TP.T_init_min(param_set), air_temperature(param_set, e_int, q_tot))
-    @fastmath for _ in 1:maxiter
-        e_val      = internal_energy_sat(param_set, T, ρ, q_tot)
-        de_int_dT  = ∂e_int_∂T_sat_ρ(param_set, T, ρ, q_tot)
-        T += (e_int - e_val) / de_int_dT
+    T_unsat   = air_temperature(param_set, e_int, q_tot)
+    saturated = _is_saturated(param_set, T_unsat, ρ, q_tot)
+    T  = max(T_unsat, T_positive_floor(eltype(param_set)))
+    ΔT = T
+    for _ in 1:maxiter
+        e_val     = internal_energy_sat(param_set, T, ρ, q_tot, Val(false))
+        de_int_dT = ∂e_int_∂T_sat_ρ(param_set, T, ρ, q_tot, Val(false))
+        (T, ΔT)   = _newton_update(param_set, T, (e_int - e_val) / de_int_dT)  # clamp + max, no branch
     end
+    (T, ΔT) = _select_solution(saturated, T, ΔT, T_unsat)   # ifelse between saturated and exact unsaturated
     (q_liq, q_ice) = condensate_partition(param_set, T, ρ, q_tot)
-    return (; T, q_liq, q_ice, converged = true)
+    return (; T, q_liq, q_ice, converged = _fixed_iters_converged(T, ΔT))
 end
 ```
 
@@ -179,8 +185,10 @@ by two offline test files:
   high-iteration (`maxiter = 40`, tight-tolerance) reference solve across the
   same profiles, in both `Float32` and `Float64`.
 
-The docstring then records the result: *"`maxiter = 2` … for typical atmospheric
-conditions (T < 320 K), this achieves better than 0.1 K accuracy."* When you
+The docstring then records the result and its range of validity: two
+iterations hold the temperature error below 2e-3 K for first-guess-to-solution
+gaps up to the ~4 K seen across the tested profiles, growing to a few tenths of
+a K around a 10 K gap, where a larger `maxiter` is worth passing. When you
 introduce or tune a fixed-iteration solver, ship the analogous test and state the
 achieved tolerance and its valid range in the docstring.
 
