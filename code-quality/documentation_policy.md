@@ -9,7 +9,7 @@ CliMA is committed to producing high-quality, well-documented software so that k
 - **Do** document interfaces, expected behavior, and short examples.
 - **Do not** narrate what the code does line by line; the code itself should be self-explanatory.
 
-This guide covers docstrings and repository-level documentation. For the `#` comments beside the code — what earns one, and the defects to sweep for — see [code_comments.md](code_comments.md).
+This guide covers the structure and rendering of docstrings and repository-level documentation. For inline `#` comments and shared prose style across comments, docstrings, and `docs/src/` pages — stating what is the case, words to cut, and sweeping a branch — see [code_comments.md](code_comments.md).
 
 ## 2. Repository documentation
 
@@ -104,7 +104,7 @@ Row conventions:
 
 Both are required: pinning a badge to `main` for a workflow that never runs there yields `no status`, and a `main`-running workflow with an unpinned badge still reports other branches. See [ci_triage.md §13](../workflow/ci_triage.md) for diagnosing a badge that reads `failing`, `unknown`, or `no status`.
 
-**Markdown is formatted in some repos.** Where the formatter hook covers markdown (ClimaAtmos runs JuliaFormatter over `types_or: [julia, markdown]`), it will inline reference-style links, pad table columns, and indent list items. Run the repo's pinned formatter over the README before pushing, and match the version CI uses — see [code_style.md §1](code_style.md).
+**Markdown is formatted in some repos.** Where `format_markdown = true` is enabled (for example, ClimaAtmos runs JuliaFormatter over `types_or: [julia, markdown]`), the formatter inlines reference-style links in the README and owns list markers (`  - `, `      + `) and table alignment in `docs/src/`, without reflowing prose. Rewrap paragraphs by hand, let the formatter win on list markers and tables, and run the repo's pinned formatter before pushing — see [code_style.md §1](code_style.md).
 
 ### 2.4 License, NOTICE, and copyright
 
@@ -189,6 +189,7 @@ Universal rules:
 - **Backtick `code`** for variable names, type names, and option strings.
 - **Sentences end with periods**, including in bullet items.
 - **Be concise.** Names and formulas do the work; a docstring is not a tutorial.
+- **Follow the shared prose style** ([code_comments.md §2](code_comments.md)): write in the present, state what is the case rather than what is not, and cut filler adverbs, weak adjectives, and machine-sounding phrasing.
 
 ### 3.3 Section headings
 
@@ -471,6 +472,10 @@ Do not attempt to escape brackets with backslashes in Julia string literals; tha
 **Missing docstrings.** If `makedocs` fails with "Missing docstrings", ensure every exported symbol with a docstring is included on a documentation page via `@docs` or `@autodocs`.
 
 **Undefined cross-package symbols.** Use fully qualified names (`Thermodynamics.ThermodynamicsParameters`) so Documenter's link generator can resolve them across package boundaries. For cross-repo `@ref`-style links, configure DocumenterInterLinks (§3.4).
+
+**Admonition titles are plain text.** Documenter does not parse markdown or math inside `!!! note "…"` titles: backticks and ``math`` show literally. Name the quantity in words there.
+
+**List items opening with inline math.** A markdown bullet that starts with inline math (`- ``I^c`` is…`, `- $λ$ is…`) renders the symbol centered on its own line. Lead with the noun instead: `- The face-to-center interpolation ``I^c`` is…`, `- the wavelength $λ$…`.
 
 ## Self-correction
 
